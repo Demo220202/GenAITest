@@ -29,9 +29,10 @@ parser = argparse.ArgumentParser(description='Deploy OpenAI Resources')
 #parser.add_argument('--client_id', required=True, help='CLIENT_ID')
 #parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
 #parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
-#parser.add_argument('--subscription_id', required=True, help='Azure Subscription ID')
+
 
 args = parser.parse_args()
+parser.add_argument('--subscription_id', required=True, help='Azure Subscription ID')
 
 SUBSCRIPTION_ID = args.subscription_id  # Replace with your Azure Subscription ID
 #client_id = args.client_id
