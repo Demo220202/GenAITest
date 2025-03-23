@@ -10,48 +10,34 @@ pipeline{
         stage ('Resource Group and OpenAI Resource Creation'){
             steps{
                 dir("PyCode"){
-                    sh "python3 -m venv venv"
-                    sh "source venv/bin/activate"
-                    sh "pip install -r requirements.txt"
-                    sh "python3 GenAI_automation.py --subscription_id $subscription_id --region $rg_region --deployment_model_name $dep_model_name --deployment_model_version $dep_model_version --brands $brand_names"
+                    sh """
+                        python3 -m venv venv
+                        . venv/bin/activate
+                        pip install -r requirements.txt
+                        python3 GenAI_automation.py --subscription_id $subscription_id --region $rg_region --deployment_model_name $dep_model_name --deployment_model_version $dep_model_version --brands $brand_names
+                    """
                 }
             }
         }
-        // stage ('Deployment Resource Creation'){
-        //     steps{
-        //         dir("PyCode"){
-        //             sh "python3 GenAI_automation_P2.py"
-        //         }
-        //     }
-        // }
-        
-        // stage ('DB Insertions'){
-            
-        //     steps{
-        //         dir("PyCode"){
-        //             sh "python3 AzureGenAIResourceDBInsertions.py env=$env brand=$brand_name subscription_id=$subscription_id rg_name=$rg_name user_email=$user_email"
-        //         }
-        //     }
-        // }
     }
     post {
         success {
             dir('PyCode') {
-                sh "cat output_json.json"
-                sh "rm output_json.json"
-                sh "deactivate"
-                sh "rm -rf venv"
-
+                sh """
+                    cat output_json.json
+                    rm output_json.json
+                    rm -rf venv
+                """
             }
         }
         failure {
-            sh "pwd"
             dir('PyCode'){
-                sh "python3 GenAI_automation_Revert.py --subscription_id $subscription_id"
-                //sh "python3 GenAI_automation_P2_Revert.py <command_args>"
-                sh "rm output_json.json"
-                sh "deactivate"
-                sh "rm -rf venv"
+                sh """
+                    . venv/bin/activate
+                    python3 GenAI_automation_Revert.py --subscription_id $subscription_id
+                    rm output_json.json
+                    rm -rf venv
+                """
             }
         }
     }
