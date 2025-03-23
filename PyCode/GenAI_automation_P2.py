@@ -1,12 +1,18 @@
 import json
 import os
 import argparse
-from azure.identity import DefaultAzureCredential
+from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 from azure.mgmt.cognitiveservices.models import Deployment
 from azure.mgmt.cognitiveservices.models import Sku as DeploymentSku  # Import Sku directly and rename it
 
-def authenticate(client_id, client_secret, tenant_id):
+def authenticate():
+    client_id = os.getenv("ARM_CLIENT_ID")
+    client_secret = os.getenv("ARM_CLIENT_SECRET")
+    tenant_id = os.getenv("ARM_TENANT_ID")
+    
+    if not all([client_id, client_secret, tenant_id]):
+        raise ValueError("Missing one or more Azure credentials. Please check your environment variables.")
     
     credentials = ClientSecretCredential(
         client_id=client_id,
@@ -56,11 +62,11 @@ def main():
     subscription_id = config['subscription_id']
     resources = config['resources']
 
-    client_id = parser.add_argument('--client_id', required=True, help='CLIENT_ID')
-    client_secret = parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
-    tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
+    #client_id = parser.add_argument('--client_id', required=True, help='CLIENT_ID')
+    #client_secret = parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
+    #tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
 
-    credential = authenticate(client_id, client_secret, tenant_id)
+    credential = authenticate()
     client = CognitiveServicesManagementClient(credential, subscription_id)
 
     for resource in resources:
