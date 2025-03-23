@@ -101,7 +101,7 @@ def set_subscription(subscription_id):
 
 
 def create_resource_group(brand_name):
-    rg_name = f"{brand_name.replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")}GPTAdvancedStories"
+    rg_name = f"{brand_name}GPTAdvancedStories"
     print(f"Creating Resource Group: {rg_name}")
     resource_client.resource_groups.create_or_update(
         rg_name,
@@ -115,7 +115,7 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
     created_resources = []  # Track created resources
     for resource_type, regions in RESOURCE_TEMPLATE.items():
         for region in regions:
-            resource_name = f"{brand_name.replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")}ProdGPTAdvancedStories{resource_type}{region.replace(' ', '')}"
+            resource_name = f"{brand_name}ProdGPTAdvancedStories{resource_type}{region.replace(' ', '')}"
             truncated_resource_name = resource_name[:50]
             deployment_name = f"Deploy-{truncated_resource_name}"[:64]
 
@@ -174,6 +174,7 @@ def main():
     all_resources = []
     for brand in BRANDS:
         rg_name = create_resource_group(brand)
+        brand = brand.replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
         resources = create_openai_resources(rg_name, brand, SUBSCRIPTION_ID)
         all_resources.extend(resources)
 
