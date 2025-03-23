@@ -47,7 +47,7 @@ pipeline{
         failure {
             sh "pwd"
             dir('PyCode'){
-                sh "python3 GenAI_automation_Revert.py --client_id ARM_CLIENT_ID --client_secret ARM_CLIENT_SECRET --tenant_id ARM_TENANT_ID"
+                sh "python3 GenAI_automation_Revert.py --subscription_id $subscription_id --client_id ARM_CLIENT_ID --client_secret ARM_CLIENT_SECRET --tenant_id ARM_TENANT_ID"
                 //sh "python3 GenAI_automation_P2_Revert.py <command_args>"
                 sh "rm output_json.json"
                 sh "deactivate"
