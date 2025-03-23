@@ -173,8 +173,8 @@ def main():
 
     all_resources = []
     for brand in BRANDS:
-        rg_name = create_resource_group(brand)
         brand = brand.replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
+        rg_name = create_resource_group(brand)
         resources = create_openai_resources(rg_name, brand, SUBSCRIPTION_ID)
         all_resources.extend(resources)
 
