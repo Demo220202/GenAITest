@@ -11,6 +11,11 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh """
+                        export PATH="$HOME/.pyenv/bin:$PATH"
+                        eval "$(pyenv init --path)"
+                        pyenv install -s 3.8.10
+                        pyenv global 3.8.10
+                        python3 --version  # Check Python version
                         python3 -m venv venv
                         . venv/bin/activate
                         pip install --upgrade pip
