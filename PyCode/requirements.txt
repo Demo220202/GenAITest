@@ -1,5 +1,6 @@
 azure-identity
 azure-mgmt-resource
+azure-cli
 azure-mgmt-cognitiveservices
 boto3
 botocore
