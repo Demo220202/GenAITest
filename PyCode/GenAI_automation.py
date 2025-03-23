@@ -63,8 +63,8 @@ def authenticate(client_id, client_secret, tenant_id):
 # tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
 
 # Authenticate with Azure
-# credentials = authenticate(client_id, client_secret, tenant_id)
-credentials = DefaultAzureCredential()
+credentials = authenticate(client_id, client_secret, tenant_id)
+#credentials = DefaultAzureCredential()
 
 resource_client = ResourceManagementClient(credentials, SUBSCRIPTION_ID)
 
