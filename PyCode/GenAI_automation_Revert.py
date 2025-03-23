@@ -6,11 +6,9 @@ from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.resource.resources.models import Deployment, DeploymentMode
 
 # Constants
-SUBSCRIPTION_ID = "de8e65ea-9d88-4eb8-acf1-22c75d8578f0"  # Replace with your Azure Subscription ID
 RESOURCE_FILE = "openai_resources.json"
 
 def authenticate(client_id, client_secret, tenant_id):
-    
     credentials = ClientSecretCredential(
         client_id=client_id,
         client_secret=client_secret,
@@ -18,9 +16,19 @@ def authenticate(client_id, client_secret, tenant_id):
     )
     return credentials
 
-client_id = parser.add_argument('--client_id', required=True, help='CLIENT_ID')
-client_secret = parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
-tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
+parser = argparse.ArgumentParser(description='Deploy OpenAI Resources')
+parser.add_argument('--client_id', required=True, help='CLIENT_ID')
+parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
+parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
+parser.add_argument('--subscription_id', required=True, help='Azure Subscription ID')
+
+args = parser.parse_args()
+
+SUBSCRIPTION_ID = args.subscription_id  # Replace with your Azure Subscription ID
+client_id = args.client_id
+client_secret = args.client_secret
+tenant_id = args.tenant_id
+
 
 # Authenticate with Azure
 credentials = authenticate(client_id, client_secret, tenant_id)
