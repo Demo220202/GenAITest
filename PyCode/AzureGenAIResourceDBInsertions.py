@@ -1,8 +1,10 @@
+import os
+import argparse
 import mysql.connector
 from AzureGenAIResourceRead import *
 from rdsConnectAzure import *
 
-def db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG):
+def db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id):
     # Connect to databases
     try:
         main_db_conn = mysql.connector.connect(**MAIN_DB_CONFIG)
@@ -35,7 +37,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
 
         ### Step 2: Insert into bot_db service_resources
 
-        query_variables = getQueryVariables(subscription_id, resource_group_name)
+        query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id)
 
         for key, value in query_variables.items():
 
@@ -95,15 +97,30 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
 
 def main():
 
-    env = "prod"
+    parser = argparse.ArgumentParser(description="Azure GenAI Resource DB Inserions")
+
+    parser.add_argument('--env', required=True, help='Environemt e.g., beta, prod, etc')
     main_secret, bot_secret = get_secret(env)
 
     # Database connection details
 
-    brand_name = "Verizon" # as per brand table
-    subscription_id = "99b2e5ca-4611-438f-a55a-e0137eac1c04"
-    resource_group_name = "VerizonGPTAdvancedStories"
-    user_email = "adityap@zenarate.com"
+    parser.add_argument('--brand', required=True, help='Brand Name as per the table') # as per brand table
+    parser.add_argument('--subscription_id', required=True, help='Azure Subscription ID')
+    parser.add_argument('--rg_name', required=True, help='Resource Group Name')
+    parser.add_argument('--email', required=True, help='Email of User')
+
+    args = parser.parse_args()
+    
+    env = args.env
+    brand_name = args.brand
+    subscription_id = args.subscription_id
+    resource_group_name = args.rg_name
+    user_email = args.email
+    
+
+    client_id = os.getenv("ARM_CLIENT_ID")
+    client_secret = os.getenv("ARM_CLIENT_SECRET")
+    tenant_id = os.getenv("ARM_TENANT_ID")
 
     # MAIN_DB_CONFIG = {
     #     "host": "localhost",
@@ -141,7 +158,7 @@ def main():
     #     cursor.execute(query, params or ())
     #     return cursor.fetchall()
 
-    db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG)
+    db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id)
 
 
 if __name__ == "__main__":
