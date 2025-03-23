@@ -1,0 +1,12 @@
+azure-identity
+azure-mgmt-resource
+azure-mgmt-cognitiveservices
+boto3
+botocore
+mysql-connector-python
+subprocess
+argparse
+os
+json
+requests
+sys

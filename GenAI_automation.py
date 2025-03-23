@@ -1,0 +1,180 @@
+import requests
+import json
+import subprocess
+import argparse
+from azure.identity import DefaultAzureCredential, ClientSecretCredential
+from azure.mgmt.resource import ResourceManagementClient
+from azure.mgmt.resource.resources.models import Deployment, DeploymentMode
+from azure.cli.core import get_default_cli
+# from CapacityOfDeploymentResources import *
+from MaximumQuotaAzureDeploymentResources import *
+
+
+# def parse_arguments():
+#     parser = argparse.ArgumentParser(description='Deploy OpenAI Resources')
+#     parser.add_argument('--subscription_id', required=True, help='Azure Subscription ID')
+#     parser.add_argument('--region', required=True, help='Azure Region')
+#     parser.add_argument('--deployment_model_name', required=True, help='Deployment Model Name')
+#     parser.add_argument('--deployment_model_version', required=True, help='Deployment Model Version')
+#     parser.add_argument('--brands', required=True, help='Comma-separated list of brands')
+#     return parser.parse_args()
+
+
+
+parser = argparse.ArgumentParser(description='Deploy OpenAI Resources')
+# Constants
+# parser = argparse.ArgumentParser(description='Deploy OpenAI Resources')
+parser.add_argument('--subscription_id', required=True, help='Azure Subscription ID')
+parser.add_argument('--region', required=True, help='Azure Region')
+parser.add_argument('--deployment_model_name', required=True, help='Deployment Model Name')
+parser.add_argument('--deployment_model_version', required=True, help='Deployment Model Version')
+parser.add_argument('--brands', required=True, help='Comma-separated list of brands')
+
+args = parser.parse_args()
+
+SUBSCRIPTION_ID = args.subscription_id  # Replace with your Azure Subscription ID
+REGION = args.region
+
+DEPLOYMENT_MODEL_NAME = args.deployment_model_name
+DEPLOYMENT_MODEL_VERSION = args.deployment_model_version
+
+BRANDS = args.brands.split(",")
+
+RESOURCE_TEMPLATE = {
+    "Authoring": ["NorthCentralUS"],
+    "Evaluation": ["WestUS"]
+    # "Prediction": ["EastUS"]
+    # "Evaluation": ["WestUS", "WestUS3"],
+    # "Prediction": ["EastUS", "EastUS2"]
+}
+
+
+def authenticate(client_id, client_secret, tenant_id):
+    credentials = ClientSecretCredential(
+        client_id=client_id,
+        client_secret=client_secret,
+        tenant_id=tenant_id
+    )
+    return credentials
+
+
+# client_id = parser.add_argument('--client_id', required=True, help='CLIENT_ID')
+# client_secret = parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
+# tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
+
+# Authenticate with Azure
+# credentials = authenticate(client_id, client_secret, tenant_id)
+credentials = DefaultAzureCredential()
+
+resource_client = ResourceManagementClient(credentials, SUBSCRIPTION_ID)
+
+
+def set_subscription(subscription_id):
+    """
+    Sets the active Azure subscription programmatically using subprocess.
+    """
+    try:
+        print(f"Setting subscription to: {subscription_id}")
+        result = subprocess.run(
+            ["az", "account", "set", "--subscription", subscription_id],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        print(f"Subscription set successfully: {result.stdout}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error setting subscription: {e.stderr}")
+        raise
+
+
+def create_resource_group(brand_name):
+    rg_name = f"{brand_name.replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")}GPTAdvancedStories"
+    print(f"Creating Resource Group: {rg_name}")
+    resource_client.resource_groups.create_or_update(
+        rg_name,
+        {"location": REGION}
+    )
+    return rg_name
+
+
+# Update the create_openai_resources function to track created resources
+def create_openai_resources(rg_name, brand_name, subscription_id):
+    created_resources = []  # Track created resources
+    for resource_type, regions in RESOURCE_TEMPLATE.items():
+        for region in regions:
+            resource_name = f"{brand_name.replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")}ProdGPTAdvancedStories{resource_type}{region.replace(' ', '')}"
+            truncated_resource_name = resource_name[:50]
+            deployment_name = f"Deploy-{truncated_resource_name}"[:64]
+
+            # endpoint_url = f"https://{resource_name.lower()}.openai.azure.com/"
+            endpoint_url = resource_name.lower()
+
+            print(f"Creating OpenAI Resource: {resource_name} in {region}")
+
+            deployment_properties = {
+                "mode": DeploymentMode.incremental,
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.CognitiveServices/accounts",
+                            "apiVersion": "2023-05-01",
+                            "name": resource_name,
+                            "location": region,
+                            "sku": {"name": "S0"},
+                            "kind": "OpenAI",
+                            "properties": {
+                                "customSubDomainName": endpoint_url
+                            }
+                        }
+                    ]
+                },
+                "parameters": {}
+            }
+
+            resource_client.deployments.begin_create_or_update(
+                rg_name,
+                deployment_name,
+                Deployment(properties=deployment_properties)
+            ).result()  # Wait for completion
+
+            capacity = get_max_capacity(subscription_id, region, DEPLOYMENT_MODEL_NAME)
+            #
+            # Add resource details to list
+            created_resources.append({
+                "resource_group": rg_name,
+                "resource_name": resource_name,
+                "region": region,
+                "deployment_name": DEPLOYMENT_MODEL_NAME,
+                "capacity": capacity,
+                "model_name": DEPLOYMENT_MODEL_NAME,
+                "model_version": DEPLOYMENT_MODEL_VERSION
+            })
+
+    return created_resources
+
+
+def main():
+    set_subscription(SUBSCRIPTION_ID)
+
+    all_resources = []
+    for brand in BRANDS:
+        rg_name = create_resource_group(brand)
+        resources = create_openai_resources(rg_name, brand, SUBSCRIPTION_ID)
+        all_resources.extend(resources)
+
+    output_json = {
+        "subscription_id": SUBSCRIPTION_ID,
+        "resources": all_resources
+    }
+
+    # Write all created resources to a JSON file
+    with open("openai_resources.json", "w") as f:
+        json.dump(output_json, f, indent=4)
+
+    print("Resources written to openai_resources.json")
+
+
+if __name__ == "__main__":
+    main()
