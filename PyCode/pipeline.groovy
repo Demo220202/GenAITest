@@ -25,8 +25,8 @@ pipeline{
         success {
             dir('PyCode') {
                 sh """
-                    cat openai_resource.json
-                    rm openai_resource.json
+                    cat openai_resources.json
+                    rm openai_resources.json
                     rm -rf venv
                 """
             }
