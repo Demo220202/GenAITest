@@ -8,7 +8,14 @@ from azure.mgmt.resource.resources.models import Deployment, DeploymentMode
 # Constants
 RESOURCE_FILE = "openai_resources.json"
 
-def authenticate(client_id, client_secret, tenant_id):
+def authenticate():
+    client_id = os.getenv("ARM_CLIENT_ID")
+    client_secret = os.getenv("ARM_CLIENT_SECRET")
+    tenant_id = os.getenv("ARM_TENANT_ID")
+    
+    if not all([client_id, client_secret, tenant_id]):
+        raise ValueError("Missing one or more Azure credentials. Please check your environment variables.")
+    
     credentials = ClientSecretCredential(
         client_id=client_id,
         client_secret=client_secret,
@@ -16,22 +23,23 @@ def authenticate(client_id, client_secret, tenant_id):
     )
     return credentials
 
+
 parser = argparse.ArgumentParser(description='Deploy OpenAI Resources')
-parser.add_argument('--client_id', required=True, help='CLIENT_ID')
-parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
-parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
-parser.add_argument('--subscription_id', required=True, help='Azure Subscription ID')
+#parser.add_argument('--client_id', required=True, help='CLIENT_ID')
+#parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
+#parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
+#parser.add_argument('--subscription_id', required=True, help='Azure Subscription ID')
 
 args = parser.parse_args()
 
 SUBSCRIPTION_ID = args.subscription_id  # Replace with your Azure Subscription ID
-client_id = args.client_id
-client_secret = args.client_secret
-tenant_id = args.tenant_id
+#client_id = args.client_id
+#client_secret = args.client_secret
+#tenant_id = args.tenant_id
 
 
 # Authenticate with Azure
-credentials = authenticate(client_id, client_secret, tenant_id)
+credentials = authenticate()
 resource_client = ResourceManagementClient(credentials, SUBSCRIPTION_ID)
 
 
