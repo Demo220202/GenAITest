@@ -25,20 +25,20 @@ pipeline{
         success {
             dir('PyCode') {
                 sh """
-                    cat output_json.json
-                    rm output_json.json
+                    cat openai_resource.json
+                    rm openai_resource.json
                     rm -rf venv
                 """
             }
         }
         failure {
             dir('PyCode'){
-                sh """
+                sh '''
                     . venv/bin/activate
                     python3 GenAI_automation_Revert.py --subscription_id $subscription_id
-                    rm output_json.json
+                    rm openai_resources.json
                     rm -rf venv
-                """
+                '''
             }
         }
     }
