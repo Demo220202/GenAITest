@@ -1,7 +1,9 @@
-from azure.identity import DefaultAzureCredential
+from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 import json
+import argparse
+
 
 # # Set your Azure Subscription ID
 # subscription_id = "f5eb2504-71c9-4d5d-b758-ecfc952962b5"
@@ -16,7 +18,6 @@ import json
 # resources = client.resources.list_by_resource_group(resource_group_name)
 
 def authenticate(client_id, client_secret, tenant_id):
-    
     credentials = ClientSecretCredential(
         client_id=client_id,
         client_secret=client_secret,
@@ -24,12 +25,14 @@ def authenticate(client_id, client_secret, tenant_id):
     )
     return credentials
 
-client_id = parser.add_argument('--client_id', required=True, help='CLIENT_ID')
-client_secret = parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
-tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
+# parser = argparse.ArgumentParser(description='Deploy OpenAI Resources')
+#
+# client_id = parser.add_argument('--client_id', required=True, help='CLIENT_ID')
+# client_secret = parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
+# tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
+
 
 def get_type_region(resource):
-
     res_type = None
     region = None
 
@@ -42,19 +45,18 @@ def get_type_region(resource):
     return res_type, region
 
 
-def getQueryVariables(subs_id, res_grp_name):
+def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id):
     # Set your Azure Subscription ID
     subscription_id = subs_id
     resource_group_name = res_grp_name
 
     # Authenticate
-    credential = credential = authenticate(client_id, client_secret, tenant_id)
+    credential = authenticate(client_id, client_secret, tenant_id)
     client = ResourceManagementClient(credential, subscription_id)
     cognitive_client = CognitiveServicesManagementClient(credential, subscription_id)
 
     # Fetch resources in the resource group
     resources = client.resources.list_by_resource_group(resource_group_name)
-
 
     query_variables = {}
 
