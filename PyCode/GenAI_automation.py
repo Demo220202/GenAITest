@@ -58,9 +58,13 @@ def authenticate(client_id, client_secret, tenant_id):
     return credentials
 
 
-# client_id = parser.add_argument('--client_id', required=True, help='CLIENT_ID')
-# client_secret = parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
-# tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
+parser.add_argument('--client_id', required=True, help='CLIENT_ID')
+parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
+parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
+
+client_id = args.client_id
+client_secret = args.client_secret
+tenant_id = args.tenant_id
 
 # Authenticate with Azure
 credentials = authenticate(client_id, client_secret, tenant_id)
