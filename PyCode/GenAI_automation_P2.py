@@ -33,6 +33,59 @@ def get_cognitive_account(client, resource_group_name, account_name):
         print(f"Failed to fetch Cognitive Account: {account_name} in RG: {resource_group_name}. Error: {e}")
         return None
 
+def enable_dynamic_quota(subscription_id, resource_group, account_name, deployment_name, credential, api_version="2023-10-01-preview"):
+    """
+    Enables the Dynamic Quota (Dynamic Throttling) for an Azure Cognitive Services deployment.
+
+    :param subscription_id: Azure Subscription ID
+    :param resource_group: Azure Resource Group name
+    :param account_name: Cognitive Services account name
+    :param deployment_name: Deployment name (e.g., GPT-4o)
+    :param api_version: API version (default: "2023-10-01-preview")
+    :return: Response JSON or error message
+    """
+
+    body = {
+        "properties": {
+            "dynamicThrottlingEnabled": True,
+            "raiPolicyName": "Microsoft.DefaultV2"
+        }
+    }
+
+    # Convert the Python dictionary to a JSON string
+    body_json = json.dumps(body)
+
+    # Construct the Azure CLI command
+    az_command = [
+        "az", "rest",
+        "--method", "patch",
+        "--url",
+        f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.CognitiveServices/accounts/{account_name}/deployments/{deployment_name}?api-version={api_version}",
+        "--body", body_json
+    ]
+
+    try:
+        # Execute the command and capture the output
+        result = subprocess.run(az_command, capture_output=True, text=True, check=True)
+
+        # Print the response from Azure
+        print(f"Response: {result.stdout}")
+
+        # Parse the response as JSON
+        response = json.loads(result.stdout)
+
+        # Validate if both settings are applied
+        if "properties" in response and response["properties"].get("dynamicThrottlingEnabled") == True and response[
+            "properties"].get("raiPolicyName") == "Microsoft.DefaultV2":
+            return {"success": True, "message": "✅ Successfully enabled Dynamic Quota and set RAI Policy!",
+                    "response": response}
+        else:
+            return {"success": False, "message": f"❌ Failed to apply settings. Response: {response}"}
+
+    except subprocess.CalledProcessError as e:
+        return {"success": False, "message": f"❌ Command failed with error: {e.stderr}"}
+
+
 def create_or_update_deployment(client, resource_group_name, account_name, deployment_name, capacity, model_name, model_version):
     try:
         deployment_params = Deployment(
@@ -82,6 +135,8 @@ def main():
                 resource['model_name'],
                 resource['model_version']
             )
+
+            print(enable_dynamic_quota(subscription_id, resource['resource_group'], resource['resource_name'], resource['model_name'], credential, "2023-10-01-preview"))
 
 if __name__ == "__main__":
     main()
