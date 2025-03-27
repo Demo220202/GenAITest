@@ -1,6 +1,23 @@
 import json
-from azure.identity import DefaultAzureCredential
+from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.mgmt.monitor import MonitorManagementClient
+
+def authenticate():
+    client_id = os.getenv("ARM_CLIENT_ID")
+    client_secret = os.getenv("ARM_CLIENT_SECRET")
+    tenant_id = os.getenv("ARM_TENANT_ID")
+
+    if not all([client_id, client_secret, tenant_id]):
+        raise ValueError("Missing one or more Azure credentials. Please check your environment variables.")
+
+    credentials = ClientSecretCredential(
+        client_id=client_id,
+        client_secret=client_secret,
+        tenant_id=tenant_id
+    )
+    return credentials
+
+
 
 def load_config(file_path):
     with open(file_path, 'r') as f:
@@ -29,7 +46,7 @@ def main():
     action_group_name = config['action_group_name']
     resources = config['alerts']
 
-    credential = DefaultAzureCredential()
+    credential = authenticate()
     monitor_client = MonitorManagementClient(credential, subscription_id)
 
     for resource in resources:
