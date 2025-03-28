@@ -115,9 +115,6 @@ def main():
     subscription_id = config['subscription_id']
     resources = config['resources']
 
-    #client_id = parser.add_argument('--client_id', required=True, help='CLIENT_ID')
-    #client_secret = parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
-    #tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
 
     credential = authenticate()
     client = CognitiveServicesManagementClient(credential, subscription_id)
