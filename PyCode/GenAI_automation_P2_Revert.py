@@ -12,9 +12,9 @@ def authenticate(client_id, client_secret, tenant_id):
     )
     return credentials
 
-client_id = parser.add_argument('--client_id', required=True, help='CLIENT_ID')
-client_secret = parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
-tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
+#client_id = parser.add_argument('--client_id', required=True, help='CLIENT_ID')
+#client_secret = parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
+#tenant_id = parser.add_argument('--tenant_id', required=True, help='TENANT_ID')
 
 def load_config(file_path):
     with open(file_path, 'r') as f:
