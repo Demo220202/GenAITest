@@ -17,7 +17,14 @@ import argparse
 # # Fetch resources in the resource group
 # resources = client.resources.list_by_resource_group(resource_group_name)
 
-def authenticate(client_id, client_secret, tenant_id):
+def authenticate():
+    client_id = os.getenv("ARM_CLIENT_ID")
+    client_secret = os.getenv("ARM_CLIENT_SECRET")
+    tenant_id = os.getenv("ARM_TENANT_ID")
+
+    if not all([client_id, client_secret, tenant_id]):
+        raise ValueError("Missing one or more Azure credentials. Please check your environment variables.")
+
     credentials = ClientSecretCredential(
         client_id=client_id,
         client_secret=client_secret,
@@ -51,7 +58,7 @@ def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id
     resource_group_name = res_grp_name
 
     # Authenticate
-    credential = authenticate(client_id, client_secret, tenant_id)
+    credential = authenticate()
     client = ResourceManagementClient(credential, subscription_id)
     cognitive_client = CognitiveServicesManagementClient(credential, subscription_id)
 
