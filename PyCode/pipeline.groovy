@@ -57,8 +57,8 @@ pipeline{
         }
         
     }
-    post {
-        success {
+    //post {
+        //success {
             //dir('PyCode') {
                 //sh """
                 //    cat openai_resources.json
@@ -68,8 +68,8 @@ pipeline{
                 //    rm -rf venv
             //    """
             //}
-        }
-        failure {
+        //}
+        //failure {
             //dir('PyCode'){
             //    sh '''
             //        . venv/bin/activate
@@ -81,6 +81,6 @@ pipeline{
             //        rm -rf venv
             //    '''
             //}
-        }
-    }
+        //}
+    //}
 }
