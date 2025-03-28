@@ -47,6 +47,7 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
+                        python3.10 -m venv venv 
                         . venv/bin/activate
                         pip install --upgrade pip
                         pip install -r requirements.txt
