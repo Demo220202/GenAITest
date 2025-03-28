@@ -1,4 +1,5 @@
 import json
+import os
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.mgmt.monitor import MonitorManagementClient
 from azure.mgmt.resource import ResourceManagementClient
