@@ -20,6 +20,23 @@ pipeline{
                 }
             }
         }
+
+        stage ('Deployment Resource Creation and Enabling Dynamic Quota'){
+            steps{
+                dir("PyCode"){
+                    sh "python3 GenAI_automation_P2.py"
+                }
+            }
+        }
+
+        stage ('Creation of Action Group and Alerts'){
+            steps{
+                dir("PyCode"){
+                    sh "python3 ActionGroupNAlerts.py"
+                }
+            }
+        }
+        
     }
     post {
         success {
@@ -27,6 +44,8 @@ pipeline{
                 sh """
                     cat openai_resources.json
                     rm openai_resources.json
+                    cat alert_resources.json
+                    rm alert_resources.json
                     rm -rf venv
                 """
             }
@@ -36,7 +55,10 @@ pipeline{
                 sh '''
                     . venv/bin/activate
                     python3 GenAI_automation_Revert.py --subscription_id $subscription_id
+                    python3 GenAI_automation_P2_Revert.py
+                    python3 ActionGroupNAlerts_Revert.py
                     rm openai_resources.json
+                    rm alert_resources.json
                     rm -rf venv
                 '''
             }
