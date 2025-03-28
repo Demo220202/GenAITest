@@ -103,7 +103,7 @@ def main():
     env = "prod"
     main_secret, bot_secret = get_secret(env)
 
-    config = load_config('openai_resources.json')
+    #config = load_config('openai_resources.json')
 
 
     # Database connection details
@@ -112,7 +112,8 @@ def main():
         # "Wolters Kluwer" # as per brand table
     subscription_id = ""
         # "fee8cb00-2601-4963-a4f9-793ed834e3ab"
-    resource_group_name = config["resources"][0]["resource_group"]
+    #resource_group_name = config["resources"][0]["resource_group"]
+    resource_group_name = ""
     user_email = "adityap@zenarate.com"
 
     # MAIN_DB_CONFIG = {
