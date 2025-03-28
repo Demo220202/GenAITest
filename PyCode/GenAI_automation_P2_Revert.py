@@ -32,7 +32,7 @@ def main():
     subscription_id = config['subscription_id']
     resources = config['resources']
 
-    credential = authenticate(client_id, client_secret, tenant_id)
+    credential = authenticate()
     client = CognitiveServicesManagementClient(credential, subscription_id)
 
     for resource in resources:
