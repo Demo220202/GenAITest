@@ -1,6 +1,7 @@
 import json
 import os
 import argparse
+import subprocess
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 from azure.mgmt.cognitiveservices.models import Deployment
