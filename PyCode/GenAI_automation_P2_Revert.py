@@ -3,7 +3,7 @@ import os
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 
-def authenticate(client_id, client_secret, tenant_id):
+def authenticate():
     
     credentials = ClientSecretCredential(
         client_id=client_id,
