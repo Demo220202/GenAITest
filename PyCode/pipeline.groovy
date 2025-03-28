@@ -24,8 +24,10 @@ pipeline{
         stage ('Deployment Resource Creation and Enabling Dynamic Quota'){
             steps{
                 dir("PyCode"){
-                    sh ". venv/bin/activate"
-                    sh "python3 GenAI_automation_P2.py"
+                    sh '''
+                        . venv/bin/activate
+                        python3 GenAI_automation_P2.py
+                    '''
                 }
             }
         }
@@ -33,8 +35,10 @@ pipeline{
         stage ('Creation of Action Group and Alerts'){
             steps{
                 dir("PyCode"){
-                    sh ". venv/bin/activate"
-                    sh "python3 ActionGroupNAlerts.py"
+                    sh '''
+                        . venv/bin/activate
+                        python3 ActionGroupNAlerts.py
+                    '''
                 }
             }
         }
