@@ -67,7 +67,7 @@ pipeline{
                 //    rm alert_resources.json
                 //    rm -rf venv
             //    """
-            }
+            //}
         }
         failure {
             //dir('PyCode'){
@@ -80,7 +80,7 @@ pipeline{
             //        rm alert_resources.json
             //        rm -rf venv
             //    '''
-            }
+            //}
         }
     }
 }
