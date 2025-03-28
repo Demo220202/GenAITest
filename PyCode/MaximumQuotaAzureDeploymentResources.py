@@ -17,7 +17,7 @@ def get_quota_details(subscription_id, region, access_token, deployment_name, sk
 
         if response.status_code == 200:
             data = response.json()
-            print("Quota Details:", json.dumps(data, indent=2))  # Print the response for debugging
+            #print("Quota Details:", json.dumps(data, indent=2))  # Print the response for debugging
 
             for item in data.get("value", []):
                 if "name" in item and "limit" in item:
@@ -25,9 +25,11 @@ def get_quota_details(subscription_id, region, access_token, deployment_name, sk
                     limit = item["limit"]
                     current_value = item.get("currentValue", 0)
 
-                    print(f"Quota Type: {name}, Limit: {limit}, Current Usage: {current_value}")
+                    #print(f"Quota Type: {name}, Limit: {limit}, Current Usage: {current_value}")
 
                     if name == f"OpenAI.{sku_name}.{deployment_name}":
+                        print(item)
+                        print(f"Quota Type: {name}, Limit: {limit}, Current Usage: {current_value}")
                         return limit  # Return the maximum capacity available
 
             print("Warning: No 'TokensPerMinute' quota found in the response.")
@@ -52,7 +54,7 @@ def get_quota_details(subscription_id, region, access_token, deployment_name, sk
 def get_max_capacity(subscription_id, region, deployment_name):
 
     access_token = os.popen("az account get-access-token --query accessToken -o tsv").read().strip()
-    sku_name = "Standard"
+    sku_name = "Standard" # As per current scenario
 
     quota_limit = get_quota_details(subscription_id, region, access_token, deployment_name, sku_name)
 
