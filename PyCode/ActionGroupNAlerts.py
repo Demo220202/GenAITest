@@ -19,10 +19,6 @@ email_receivers = [
     {"name": "Praveen Balachandar", "email": "praveenb@zenarate.com"},
 ]
 
-sms_receivers = [
-    {"name": "Monika_SMS", "phone_number": "7088541106"},
-]
-
 def authenticate():
     client_id = os.getenv("ARM_CLIENT_ID")
     client_secret = os.getenv("ARM_CLIENT_SECRET")
