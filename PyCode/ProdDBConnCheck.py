@@ -99,12 +99,12 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
         # Close connections
         if main_cursor:
             main_cursor.close()
-        if bot_cursor:
-            bot_cursor.close()
+        if pa_cursor:
+            pa_cursor.close()
         if main_db_conn:
             main_db_conn.close()
-        if bot_db_conn:
-            bot_db_conn.close()
+        if pa_db_conn:
+            pa_db_conn.close()
         print("🔄 Database connections closed.")
 
 
@@ -125,13 +125,13 @@ def main():
 
     # Database connection details
 
-    brand_name = "Wolters Kluwer"
+    brand_name = "Amica"
         # "Wolters Kluwer" # as per brand table
     subscription_id = ""
         # "fee8cb00-2601-4963-a4f9-793ed834e3ab"
     #resource_group_name = config["resources"][0]["resource_group"]
     resource_group_name = ""
-    user_email = "adityap@zenarate.com"
+    user_email = parser.add_argument('--user_email', required=True, help='Email of the user')
 
     # MAIN_DB_CONFIG = {
     #     "host": "localhost",
