@@ -54,18 +54,18 @@ pipeline{
             }
         }
 
-        //stage ('DB Insertions'){
+        stage ('DB Insertions'){
             
-          //  steps{
-            //    dir("PyCode"){
-              //      sh ''' 
-                //        . venv/bin/activate
-                  //      python3 AzureGenAIResourceDBInsertions.py --env $env_main  --user_email $user_email
-                    //    python3 ProdCoachDBInsertion.py --env $env_pa  --user_email $user_email
-                 //   '''
-          //      }
-         //   }
-       // }
+            steps{
+                dir("PyCode"){
+                    sh ''' 
+                        . venv/bin/activate
+                        python3 AzureGenAIResourceDBInsertions.py --env_m $env_m  --user_email $user_email
+                        python3 ProdCoachDBInsertion.py --env $env_p  --email $user_email
+                    '''
+                }
+            }
+        }
         
     }
     post {
