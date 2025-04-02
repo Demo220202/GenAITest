@@ -1,6 +1,7 @@
 import os
 import argparse
 import mysql.connector
+from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from AzureGenAIResourceRead import *
 from rdsConnectAzure import *
 
@@ -151,8 +152,8 @@ def main():
         "database": bot_secret["dbname"]
     }
 
-    print(MAIN_DB_CONFIG)
-    print(BOT_DB_CONFIG)
+    #print(MAIN_DB_CONFIG)
+    #print(BOT_DB_CONFIG)
 
     # Function to execute queries and return results
     # def execute_query(cursor, query, params=None):
