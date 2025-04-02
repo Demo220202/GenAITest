@@ -76,7 +76,6 @@ pipeline{
                    rm openai_resources.json
                    cat alert_resources.json
                    rm alert_resources.json
-                   rm -rf venv
                """
             }
         }
@@ -89,7 +88,6 @@ pipeline{
                    python3 GenAI_automation_Revert.py --subscription_id $subscription_id
                    rm openai_resources.json
                    rm alert_resources.json
-                   rm -rf venv
                '''
             }
         }
