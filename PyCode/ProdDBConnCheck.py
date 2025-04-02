@@ -172,8 +172,8 @@ def main():
         "database": main_secret["dbname"]
     }
 
-    print(PA_DB_CONFIG)
-    print(MAIN_DB_CONFIG)
+    #print(PA_DB_CONFIG)
+    #print(MAIN_DB_CONFIG)
 
     # Function to execute queries and return results
     # def execute_query(cursor, query, params=None):
