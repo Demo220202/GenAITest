@@ -48,7 +48,7 @@ pipeline{
                 dir("PyCode"){
                     sh '''
                         . venv/bin/activate
-                        python3 ProdDBConnCheck.py --env_m $env_main  -- env_p $env_pa --user_email $user_email
+                        python3 ProdDBConnCheck.py --env_m $env_main  --env_p $env_pa --user_email $user_email
                     '''
                 }
             }
