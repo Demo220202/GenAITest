@@ -117,7 +117,7 @@ def main():
 
     parser.add_argument('--env_m', required=True, help='Environemt e.g., beta, prod, etc')
     parser.add_argument('--env_p', required=True, help='Environemt e.g., pa, prod, etc')
-    parser.add_argument('--user_email', required=True, help='Email of the user')
+    parser.add_argument("--user_email", required=True, help="User email")
 
     args = parser.parse_args()
     
