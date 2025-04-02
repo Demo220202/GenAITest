@@ -156,7 +156,7 @@ def main():
 
     PA_DB_CONFIG = None
 
-    if env == "pa":
+    if env_p == "pa":
 
         PA_DB_CONFIG = {
             "host": pa_secret["host"],
