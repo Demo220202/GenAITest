@@ -4,7 +4,13 @@ from azure.identity import DefaultAzureCredential
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 
 def authenticate():
-    
+    client_id = os.getenv("ARM_CLIENT_ID")
+    client_secret = os.getenv("ARM_CLIENT_SECRET")
+    tenant_id = os.getenv("ARM_TENANT_ID")
+
+    if not all([client_id, client_secret, tenant_id]):
+        raise ValueError("Missing one or more Azure credentials. Please check your environment variables.")
+
     credentials = ClientSecretCredential(
         client_id=client_id,
         client_secret=client_secret,
