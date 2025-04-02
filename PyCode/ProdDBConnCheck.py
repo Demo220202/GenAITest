@@ -115,9 +115,14 @@ def main():
 
     parser = argparse.ArgumentParser(description="Azure GenAI Resource DB Inserions")
 
-    env_m = parser.add_argument('--env_m', required=True, help='Environemt e.g., beta, prod, etc')
-    env_p = parser.add_argument('--env_p', required=True, help='Environemt e.g., pa, prod, etc')
+    parser.add_argument('--env_m', required=True, help='Environemt e.g., beta, prod, etc')
+    parser.add_argument('--env_p', required=True, help='Environemt e.g., pa, prod, etc')
 
+    args = parser.parse_args()
+    
+    env_m = args.env_m
+    env_p = args.env_p
+    
     pa_secret, main_secret = get_secret(env_p)
 
     #config = load_config('openai_resources.json')
@@ -131,7 +136,8 @@ def main():
         # "fee8cb00-2601-4963-a4f9-793ed834e3ab"
     #resource_group_name = config["resources"][0]["resource_group"]
     resource_group_name = ""
-    user_email = parser.add_argument('--user_email', required=True, help='Email of the user')
+    parser.add_argument('--user_email', required=True, help='Email of the user')
+    user_email = args.user_email
 
     # MAIN_DB_CONFIG = {
     #     "host": "localhost",
