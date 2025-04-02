@@ -99,7 +99,7 @@ def create_action_group(brand_name, monitor_client, resource_group):
 
     return action_group, action_group_name
 
-def create_alerts(resource_group, resource_name, deployment_resource_name, region, monitor_client, resource_client, brand_name, action_group):
+def create_alerts(resource_group, resource_name, deployment_resource_name, region, monitor_client, resource_client, brand_name, action_group, capacity):
     # Create Alert Rules for each region
     alert_rule_name = f"{brand_name}-{region}-DeploymentRes-TokensRateLimit-Reached80"
 
@@ -110,6 +110,8 @@ def create_alerts(resource_group, resource_name, deployment_resource_name, regio
     if not openai_resource_id:
         raise ValueError(f"❌ Resource ID not found for: {resource_name} in {resource_group}")
 
+    count = (capacity * 1000) * 0.8
+    
     alert_rule_params = {
         "location": "Global",
         "description": f"Alert when token usage exceeds 80 per second in {region}",
@@ -127,7 +129,7 @@ def create_alerts(resource_group, resource_name, deployment_resource_name, regio
                     "metricNamespace": "Microsoft.CognitiveServices/accounts",
                     "metricName": "AzureOpenAITokenPerSecond",
                     "operator": "GreaterThanOrEqual",
-                    "threshold": 80,
+                    "threshold": count,
                     "time_aggregation": "Average",
                     "dimensions": [
                         {
@@ -170,7 +172,8 @@ def main():
     print(json.dumps(resources, indent=4))
 
     for resource in resources:
-        create_alerts(resource["resource_group"], resource["resource_name"], resource["deployment_name"], resource["region"], monitor_client, resource_client, brand_name, action_group)
+        capacity = resource["capacity"]
+        create_alerts(resource["resource_group"], resource["resource_name"], resource["deployment_name"], resource["region"], monitor_client, resource_client, brand_name, action_group, capacity)
 
     output_json = {
         "subscription_id": subscription_id,
