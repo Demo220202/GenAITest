@@ -4,6 +4,10 @@ import mysql.connector
 from AzureGenAIResourceRead import *
 from rdsConnectAzure import *
 
+def load_config(file_path):
+    with open(file_path, 'r') as f:
+        return json.load(f)
+
 def db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id):
     # Connect to databases
     try:
@@ -99,28 +103,19 @@ def main():
 
     parser = argparse.ArgumentParser(description="Azure GenAI Resource DB Inserions")
 
-    parser.add_argument('--env', required=True, help='Environemt e.g., beta, prod, etc')
+    env = parser.add_argument('--env', required=True, help='Environemt e.g., beta, prod, etc')
     main_secret, bot_secret = get_secret(env)
-
-    # Database connection details
-
-    parser.add_argument('--brand', required=True, help='Brand Name as per the table') # as per brand table
-    parser.add_argument('--subscription_id', required=True, help='Azure Subscription ID')
-    parser.add_argument('--rg_name', required=True, help='Resource Group Name')
-    parser.add_argument('--email', required=True, help='Email of User')
-
-    args = parser.parse_args()
-    
-    env = args.env
-    brand_name = args.brand
-    subscription_id = args.subscription_id
-    resource_group_name = args.rg_name
-    user_email = args.email
-    
 
     client_id = os.getenv("ARM_CLIENT_ID")
     client_secret = os.getenv("ARM_CLIENT_SECRET")
     tenant_id = os.getenv("ARM_TENANT_ID")
+
+    config = load_config('openai_resources.json')
+    subscription_id = config['subscription_id']
+    resources = config['resources']
+    brand_name = config['brand_name']
+    resource_group_name = resources[0]["resource_group"]
+    user_email = parser.add_argument('--email', required=True, help='User email')
 
     # MAIN_DB_CONFIG = {
     #     "host": "localhost",
