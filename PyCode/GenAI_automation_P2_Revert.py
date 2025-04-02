@@ -1,6 +1,6 @@
 import json
 import os
-from azure.identity import DefaultAzureCredential
+from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 
 def authenticate():
