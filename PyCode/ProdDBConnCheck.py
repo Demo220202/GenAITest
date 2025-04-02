@@ -1,3 +1,4 @@
+import argparse
 import mysql.connector
 from AzureGenAIResourceRead import *
 from rdsConnectAzure import *
@@ -7,14 +8,14 @@ def load_config(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
 
-def db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG):
+def db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG):
     # Connect to databases
     try:
+        pa_db_conn = mysql.connector.connect(**PA_DB_CONFIG)
         main_db_conn = mysql.connector.connect(**MAIN_DB_CONFIG)
-        bot_db_conn = mysql.connector.connect(**BOT_DB_CONFIG)
 
+        pa_cursor = pa_db_conn.cursor(dictionary=True)
         main_cursor = main_db_conn.cursor(dictionary=True)
-        bot_cursor = bot_db_conn.cursor(dictionary=True)
 
         ### Step 1: Fetch brand_id from main_db
         # brand_name = "Chase"
@@ -38,6 +39,15 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
         if not user:
             raise Exception(f"Email '{user_email}' not found in main_db.")
 
+        pa_cursor.execute("SELECT * FROM call_analyzer_configuration WHERE brand_id = %s", (brand_id,))
+        details = pa_cursor.fetchall()
+        pa_db_conn.commit()
+
+        print(f"Details of brand id : {brand_id} in call_analyzer_configuration - {details}")
+
+        if not details:
+            raise Exception(f"{brand_id} not found in call_analyzer_configuration table")
+    
         ### Step 2: Insert into bot_db service_resources
 
         # query_variables = getQueryVariables(subscription_id, resource_group_name)
@@ -101,7 +111,14 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
 def main():
 
     env = "prod"
-    main_secret, bot_secret = get_secret(env)
+    #main_secret, bot_secret = get_secret(env)
+
+    parser = argparse.ArgumentParser(description="Azure GenAI Resource DB Inserions")
+
+    env_m = parser.add_argument('--env_m', required=True, help='Environemt e.g., beta, prod, etc')
+    env_p = parser.add_argument('--env_p', required=True, help='Environemt e.g., pa, prod, etc')
+
+    pa_secret, main_secret = get_secret(env_p)
 
     #config = load_config('openai_resources.json')
 
@@ -130,6 +147,17 @@ def main():
     #     "database": "PoC_bot"
     # }
 
+    PA_DB_CONFIG = None
+
+    if env == "pa":
+
+        PA_DB_CONFIG = {
+            "host": pa_secret["host"],
+            "user": pa_secret["username"],
+            "password": pa_secret["password"],
+            "database": pa_secret["dbname"]
+        }
+
     MAIN_DB_CONFIG = {
         "host": main_secret["host"],
         "user": main_secret["username"],
@@ -137,22 +165,15 @@ def main():
         "database": main_secret["dbname"]
     }
 
-    BOT_DB_CONFIG = {
-        "host": bot_secret["host"],
-        "user": bot_secret["username"],
-        "password": bot_secret["password"],
-        "database": bot_secret["dbname"]
-    }
-
+    print(PA_DB_CONFIG)
     print(MAIN_DB_CONFIG)
-    print(BOT_DB_CONFIG)
 
     # Function to execute queries and return results
     # def execute_query(cursor, query, params=None):
     #     cursor.execute(query, params or ())
     #     return cursor.fetchall()
 
-    db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG)
+    db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG)
 
 
 if __name__ == "__main__":
