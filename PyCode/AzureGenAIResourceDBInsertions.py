@@ -103,8 +103,15 @@ def main():
 
     parser = argparse.ArgumentParser(description="Azure GenAI Resource DB Inserions")
 
-    env = parser.add_argument('--env', required=True, help='Environemt e.g., beta, prod, etc')
-    main_secret, bot_secret = get_secret(env)
+    parser.add_argument('--env_m', required=True, help='Environemt e.g., pa, prod, etc')
+    parser.add_argument("--user_email", required=True, help="User email")
+
+    args = parser.parse_args()
+
+    env_m = args.env_m
+    user_email = args.user_email
+    
+    main_secret, bot_secret = get_secret(env_m)
 
     client_id = os.getenv("ARM_CLIENT_ID")
     client_secret = os.getenv("ARM_CLIENT_SECRET")
@@ -115,7 +122,6 @@ def main():
     resources = config['resources']
     brand_name = config['brand_name']
     resource_group_name = resources[0]["resource_group"]
-    user_email = parser.add_argument('--email', required=True, help='User email')
 
     # MAIN_DB_CONFIG = {
     #     "host": "localhost",
