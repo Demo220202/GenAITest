@@ -84,9 +84,9 @@ pipeline{
             dir('PyCode'){
                sh '''
                    . venv/bin/activate
-                   python3 GenAI_automation_Revert.py --subscription_id $subscription_id
                    python3 GenAI_automation_P2_Revert.py
                    python3 ActionGroupNAlerts_Revert.py
+                   python3 GenAI_automation_Revert.py --subscription_id $subscription_id
                    rm openai_resources.json
                    rm alert_resources.json
                    rm -rf venv
