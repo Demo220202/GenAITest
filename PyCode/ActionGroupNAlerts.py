@@ -78,7 +78,7 @@ def create_action_group(brand_name, monitor_client, resource_group):
     # Create Action Group
     action_group_name = f"{brand_name}-DeploymentResource-Token-Alerts-AG"
     action_group_params = {
-        "location": "NorthCentralUS",
+        "location": "Global",
         "group_short_name": "Alrt80TknsRc",
         "enabled": True,
         "email_receivers": [
