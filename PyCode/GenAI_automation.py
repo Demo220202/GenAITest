@@ -42,10 +42,10 @@ DEPLOYMENT_MODEL_VERSION = args.deployment_model_version
 BRANDS = args.brands.split(",")
 
 RESOURCE_TEMPLATE = {
-    "Authoring": ["NorthCentralUS"],
-    "Evaluation": ["WestUS"]
+    #"Authoring": ["NorthCentralUS"],
+    #"Evaluation": ["WestUS"]
     # "Prediction": ["EastUS"]
-    # "Evaluation": ["WestUS", "WestUS3"],
+    "Evaluation": ["WestUS", "WestUS3"]
     # "Prediction": ["EastUS", "EastUS2"]
 }
 
