@@ -60,8 +60,8 @@ pipeline{
                 dir("PyCode"){
                     sh ''' 
                         . venv/bin/activate
-                        python3 AzureGenAIResourceDBInsertions.py --env_m $env_m  --user_email $user_email
-                        python3 ProdCoachDBInsertion.py --env $env_p  --email $user_email
+                        python3 AzureGenAIResourceDBInsertions.py --env_m $env_main  --user_email $user_email
+                        python3 ProdCoachDBInsertion.py --env $env_pa  --email $user_email
                     '''
                 }
             }
