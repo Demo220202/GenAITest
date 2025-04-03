@@ -3,6 +3,7 @@ from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 import json
 import argparse
+import os
 
 
 # # Set your Azure Subscription ID
