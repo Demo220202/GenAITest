@@ -102,6 +102,7 @@ def create_action_group(brand_name, monitor_client, resource_group):
 
 def create_alerts(resource_group, resource_name, deployment_resource_name, region, monitor_client, resource_client, brand_name, action_group, capacity):
     # Create Alert Rules for each region
+    brand_name = brand_name.replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
     alert_rule_name = f"{brand_name}-{region}-DeploymentRes-TokensRateLimit-Reached80"
 
     # Fetch resource IDs dynamically
