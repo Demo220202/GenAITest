@@ -178,7 +178,7 @@ def main():
         resources = create_openai_resources(rg_name, brand, SUBSCRIPTION_ID)
         all_resources.extend(resources)
 
-    brand = BRANDS[0].replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
+    brand = BRANDS[0].replace("-Pay-As-You-Go", "")
     output_json = {
         "subscription_id": SUBSCRIPTION_ID,
         "resources": all_resources,
