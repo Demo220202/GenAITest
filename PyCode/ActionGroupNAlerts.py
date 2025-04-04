@@ -76,6 +76,7 @@ def get_resource_id(resource_client, resource_group, resource_name, type=None):
 
 def create_action_group(brand_name, monitor_client, resource_group):
     # Create Action Group
+    brand_name = brand_name.replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
     action_group_name = f"{brand_name}-DeploymentResource-Token-Alerts-AG"
     action_group_params = {
         "location": "Global",
