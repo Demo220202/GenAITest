@@ -30,12 +30,14 @@ parser.add_argument('--region', required=True, help='Azure Region')
 parser.add_argument('--deployment_model_name', required=True, help='Deployment Model Name')
 parser.add_argument('--deployment_model_version', required=True, help='Deployment Model Version')
 parser.add_argument('--brands', required=True, help='Comma-separated list of brands')
+parser.add_argument('--deployment_type', required=True, help='Comma-separated list of brands')
 
 args = parser.parse_args()
 
 SUBSCRIPTION_ID = args.subscription_id  # Replace with your Azure Subscription ID
 REGION = args.region
 
+DEPLOYMENT_TYPE = args.deployment_type
 DEPLOYMENT_MODEL_NAME = args.deployment_model_name
 DEPLOYMENT_MODEL_VERSION = args.deployment_model_version
 
@@ -152,7 +154,7 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
                 Deployment(properties=deployment_properties)
             ).result()  # Wait for completion
 
-            capacity = get_max_capacity(subscription_id, region, DEPLOYMENT_MODEL_NAME)
+            capacity = get_max_capacity(subscription_id, region, DEPLOYMENT_MODEL_NAME, DEPLOYMENT_TYPE)
             #
             # Add resource details to list
             created_resources.append({
@@ -162,7 +164,8 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
                 "deployment_name": DEPLOYMENT_MODEL_NAME,
                 "capacity": capacity,
                 "model_name": DEPLOYMENT_MODEL_NAME,
-                "model_version": DEPLOYMENT_MODEL_VERSION
+                "model_version": DEPLOYMENT_MODEL_VERSION,
+                "sku_name": DEPLOYMENT_TYPE
             })
 
     return created_resources
