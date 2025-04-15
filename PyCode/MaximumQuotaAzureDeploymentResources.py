@@ -51,10 +51,10 @@ def get_quota_details(subscription_id, region, access_token, deployment_name, sk
 # deployment_name = "gpt-4o"
 # sku_name = "Standard"
 
-def get_max_capacity(subscription_id, region, deployment_name):
+def get_max_capacity(subscription_id, region, deployment_name, sku_name):
 
     access_token = os.popen("az account get-access-token --query accessToken -o tsv").read().strip()
-    sku_name = "Standard" # As per current scenario
+    #sku_name = "Standard" # As per current scenario
 
     quota_limit = get_quota_details(subscription_id, region, access_token, deployment_name, sku_name)
 
