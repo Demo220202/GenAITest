@@ -94,7 +94,8 @@ def create_or_update_deployment(client, resource_group_name, account_name, deplo
                 "model": {
                     "format": "OpenAI",
                     "name": model_name,
-                    "version": model_version
+                    "version": model_version,
+                    "source": "azureOpenAI"
                 }
             }
         )
