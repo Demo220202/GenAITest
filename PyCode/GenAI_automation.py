@@ -47,8 +47,8 @@ RESOURCE_TEMPLATE = {
     "Authoring": ["NorthCentralUS"],
     #"Evaluation": ["WestUS"]
     # "Prediction": ["EastUS"]
-    "Evaluation": ["WestUS", "WestUS3"]
-    "Prediction": ["EastUS", "EastUS2"]
+    #"Evaluation": ["WestUS", "WestUS3"]
+    #"Prediction": ["EastUS", "EastUS2"]
 }
 
 
