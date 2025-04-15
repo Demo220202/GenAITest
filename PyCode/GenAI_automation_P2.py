@@ -48,8 +48,7 @@ def enable_dynamic_quota(subscription_id, resource_group, account_name, deployme
 
     body = {
         "properties": {
-            "dynamicThrottlingEnabled": True,
-            "raiPolicyName": "Microsoft.DefaultV2"
+            "dynamicThrottlingEnabled": True
         }
     }
 
@@ -87,10 +86,10 @@ def enable_dynamic_quota(subscription_id, resource_group, account_name, deployme
         return {"success": False, "message": f"❌ Command failed with error: {e.stderr}"}
 
 
-def create_or_update_deployment(client, resource_group_name, account_name, deployment_name, capacity, model_name, model_version):
+def create_or_update_deployment(client, resource_group_name, account_name, deployment_name, capacity, model_name, model_version, sku_name):
     try:
         deployment_params = Deployment(
-            sku=DeploymentSku(name="Standard", capacity=capacity),
+            sku=DeploymentSku(name=sku_name, capacity=capacity),
             properties={
                 "model": {
                     "format": "OpenAI",
@@ -131,7 +130,8 @@ def main():
                 resource['deployment_name'],
                 resource['capacity'],
                 resource['model_name'],
-                resource['model_version']
+                resource['model_version'],
+                resource['sku_name']
             )
 
             print(enable_dynamic_quota(subscription_id, resource['resource_group'], resource['resource_name'], resource['model_name'], credential, "2023-10-01-preview"))
