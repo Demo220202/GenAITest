@@ -30,7 +30,7 @@ parser.add_argument('--region', required=True, help='Azure Region')
 parser.add_argument('--deployment_model_name', required=True, help='Deployment Model Name')
 parser.add_argument('--deployment_model_version', required=True, help='Deployment Model Version')
 parser.add_argument('--brands', required=True, help='Comma-separated list of brands')
-parser.add_argument('--deployment_type', required=True, help='Comma-separated list of brands')
+parser.add_argument('--deployment_type', required=True, help='Deployment Type')
 
 args = parser.parse_args()
 
