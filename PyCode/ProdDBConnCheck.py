@@ -18,7 +18,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
         main_cursor = main_db_conn.cursor(dictionary=True)
 
         ### Step 1: Fetch brand_id from main_db
-        # brand_name = "Chase"
+        #brand_name = "Chase"
         main_cursor.execute("SELECT id FROM brand WHERE name = %s", (brand_name,))
         brand = main_cursor.fetchone()
         main_db_conn.commit()
@@ -132,7 +132,7 @@ def main():
 
     # Database connection details
 
-    brand_name = "Amica"
+    brand_name = "Chase"
         # "Wolters Kluwer" # as per brand table
     subscription_id = ""
         # "fee8cb00-2601-4963-a4f9-793ed834e3ab"
