@@ -44,7 +44,7 @@ DEPLOYMENT_MODEL_VERSION = args.deployment_model_version
 BRANDS = args.brands.split(",")
 
 RESOURCE_TEMPLATE = {
-    "Authoring": ["NorthCentralUS"],
+    "PredictionAuth": ["NorthCentralUS"],
     #"Evaluation": ["WestUS"]
     # "Prediction": ["EastUS"]
     #"Evaluation": ["WestUS", "WestUS3"]
@@ -56,6 +56,10 @@ def authenticate():
     client_id = os.getenv("ARM_CLIENT_ID")
     client_secret = os.getenv("ARM_CLIENT_SECRET")
     tenant_id = os.getenv("ARM_TENANT_ID")
+
+    print("Client ID : ", client_id)
+    print("Client Secret : ", client_secret)
+    print("Tenant ID : ", tenant_id)
     
     if not all([client_id, client_secret, tenant_id]):
         raise ValueError("Missing one or more Azure credentials. Please check your environment variables.")

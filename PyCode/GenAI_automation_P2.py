@@ -2,6 +2,7 @@ import json
 import os
 import argparse
 import subprocess
+import requests
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient
 from azure.mgmt.cognitiveservices.models import Deployment
@@ -34,6 +35,41 @@ def get_cognitive_account(client, resource_group_name, account_name):
         print(f"Failed to fetch Cognitive Account: {account_name} in RG: {resource_group_name}. Error: {e}")
         return None
 
+def disable_version_auto_upgrade(subscription_id, resource_group, account_name, deployment_name, credential, api_version="2023-10-01-preview"):
+
+    url = (
+        f"https://management.azure.com/subscriptions/{subscription_id}"
+        f"/resourceGroups/{resource_group}/providers/Microsoft.CognitiveServices"
+        f"/accounts/{account_name}/deployments/{deployment_name}?api-version={api_version}"
+    )
+
+    token = credential.get_token("https://management.azure.com/.default").token
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    response = requests.get(url, headers=headers)
+    deployment = response.json()
+
+    # Update to disable automatic version updates
+    deployment["properties"]["versionUpgradeOption"] = "NoAutoUpgrade"
+    # deployment["properties"]["dynamicThrottlingEnabled"] = True
+
+    # Send PATCH request to update the deployment
+    patch_response = requests.put(url, headers=headers, json=deployment)
+
+    if patch_response.status_code in [200, 201]:
+        print("✅ Auto version update disabled successfully.")
+        response = requests.get(url, headers=headers)
+        deployment = response.json()
+        print(json.dumps(deployment, indent=4))
+
+    else:
+        print("❌ Failed to update deployment:", patch_response.status_code, patch_response.text)
+
+
+
 def enable_dynamic_quota(subscription_id, resource_group, account_name, deployment_name, credential, api_version="2023-10-01-preview"):
     """
     Enables the Dynamic Quota (Dynamic Throttling) for an Azure Cognitive Services deployment.
@@ -46,14 +82,8 @@ def enable_dynamic_quota(subscription_id, resource_group, account_name, deployme
     :return: Response JSON or error message
     """
 
-    body = {
-        "properties": {
-            "dynamicThrottlingEnabled": True
-        }
-    }
-
     # Convert the Python dictionary to a JSON string
-    body_json = json.dumps(body)
+    # body_json = json.dumps(body)
 
     # Construct the Azure CLI command
     az_command = [
@@ -61,7 +91,7 @@ def enable_dynamic_quota(subscription_id, resource_group, account_name, deployme
         "--method", "patch",
         "--url",
         f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.CognitiveServices/accounts/{account_name}/deployments/{deployment_name}?api-version={api_version}",
-        "--body", body_json
+        "--body", '{"properties": {"dynamicThrottlingEnabled": true} }'
     ]
 
     try:
@@ -75,9 +105,9 @@ def enable_dynamic_quota(subscription_id, resource_group, account_name, deployme
         response = json.loads(result.stdout)
 
         # Validate if both settings are applied
-        if "properties" in response and response["properties"].get("dynamicThrottlingEnabled") == True and response[
+        if "properties" in response and response["properties"].get("dynamicThrottlingEnabled") == True or response[
             "properties"].get("raiPolicyName") == "Microsoft.DefaultV2":
-            return {"success": True, "message": "✅ Successfully enabled Dynamic Quota and set RAI Policy!",
+            return {"success": True, "message": "✅ Successfully enabled Dynamic Quota!",
                     "response": response}
         else:
             return {"success": False, "message": f"❌ Failed to apply settings. Response: {response}"}
@@ -135,7 +165,21 @@ def main():
                 resource['sku_name']
             )
 
-            print(enable_dynamic_quota(subscription_id, resource['resource_group'], resource['resource_name'], resource['model_name'], credential, "2023-10-01-preview"))
+            if resource['sku_name'] != "DataZoneStandard":
+                print(enable_dynamic_quota(subscription_id, resource['resource_group'], resource['resource_name'],
+                                           resource['model_name'], credential,
+                                           "2023-10-01-preview"))
+
+            disable_version_auto_upgrade(subscription_id, resource['resource_group'], resource['resource_name'],
+                                         resource['model_name'], credential,
+                                         "2023-10-01-preview")
+
+            deployment_details = client.deployments.get(resource['resource_group'], resource['resource_name'],
+                                                        resource['model_name'])
+            deployment_json = deployment_details.as_dict()
+
+            print("\n🔹 Deployment JSON after toggling:\n", json.dumps(deployment_json, indent=4))
+
 
 if __name__ == "__main__":
     main()

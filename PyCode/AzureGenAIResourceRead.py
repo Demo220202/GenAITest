@@ -41,11 +41,18 @@ def authenticate():
 
 
 def get_type_region(resource):
+
     res_type = None
     region = None
 
     for i in range(len(resource)):
-        if i > 0 and resource[i] >= 'A' and resource[i] <= 'Z':
+
+        if "PredictionAuth" in resource:
+
+            res_type = "Authoring"
+            region = "NorthCentralUS"
+
+        elif i > 0 and resource[i] >= 'A' and resource[i] <= 'Z':
             res_type = resource[:i]
             region = resource[i:]
             break
@@ -53,7 +60,7 @@ def get_type_region(resource):
     return res_type, region
 
 
-def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id):
+def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id, env):
     # Set your Azure Subscription ID
     subscription_id = subs_id
     resource_group_name = res_grp_name
@@ -66,7 +73,7 @@ def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id
     # Fetch resources in the resource group
     resources = client.resources.list_by_resource_group(resource_group_name)
 
-    env = "prod"
+    # env = "prod"
     length = len(env)
 
     query_variables = {}

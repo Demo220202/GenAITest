@@ -9,7 +9,7 @@ def load_config(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
 
-def db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id):
+def db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id, env):
     # Connect to databases
     try:
         main_db_conn = mysql.connector.connect(**MAIN_DB_CONFIG)
@@ -42,7 +42,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
 
         ### Step 2: Insert into bot_db service_resources
 
-        query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id)
+        query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id, env)
 
         for key, value in query_variables.items():
 
@@ -160,7 +160,7 @@ def main():
     #     cursor.execute(query, params or ())
     #     return cursor.fetchall()
 
-    db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id)
+    db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id, env_m)
 
 
 if __name__ == "__main__":
