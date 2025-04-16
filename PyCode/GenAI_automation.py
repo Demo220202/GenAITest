@@ -45,7 +45,7 @@ BRANDS = args.brands.split(",")
 
 RESOURCE_TEMPLATE = {
     "PredictionAuth": ["NorthCentralUS"],
-    # "Evaluation": ["WestUS"],
+    # "Evaluation": ["WestUS"]
     # "Prediction": ["EastUS"]
     "Evaluation": ["EastUS", "WestUS3"],
     "Prediction": ["WestUS", "EastUS2"]
