@@ -154,7 +154,7 @@ def main():
         account = get_cognitive_account(client, resource['resource_group'], resource['resource_name'])
 
         if account:
-            deployment = create_or_update_deployment(
+            create_or_update_deployment(
                 client,
                 resource['resource_group'],
                 resource['resource_name'],
@@ -165,17 +165,16 @@ def main():
                 resource['sku_name']
             )
 
-            if deployment and resource['sku_name'] != "DataZoneStandard":
+            if resource['sku_name'] != "DataZoneStandard":
                 print(enable_dynamic_quota(subscription_id, resource['resource_group'], resource['resource_name'], resource['model_name'], credential,"2023-10-01-preview"))
 
-            if deployment:
 
-                disable_version_auto_upgrade(subscription_id, resource['resource_group'], resource['resource_name'], resource['model_name'], credential,"2023-10-01-preview")
+            disable_version_auto_upgrade(subscription_id, resource['resource_group'], resource['resource_name'], resource['model_name'], credential,"2023-10-01-preview")
 
-                deployment_details = client.deployments.get(resource['resource_group'], resource['resource_name'], resource['model_name'])
-                deployment_json = deployment_details.as_dict()
+            deployment_details = client.deployments.get(resource['resource_group'], resource['resource_name'], resource['model_name'])
+            deployment_json = deployment_details.as_dict()
 
-                print("\n🔹 Deployment JSON after toggling:\n", json.dumps(deployment_json, indent=4))
+            print("\n🔹 Deployment JSON after toggling:\n", json.dumps(deployment_json, indent=4))
 
 
 if __name__ == "__main__":
