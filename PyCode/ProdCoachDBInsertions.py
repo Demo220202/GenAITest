@@ -26,7 +26,7 @@ def load_config(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
 
-def db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG, client_id, client_secret, tenant_id):
+def db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG, client_id, client_secret, tenant_id, env_m):
     # Connect to databases
     try:
         pa_db_conn = mysql.connector.connect(**PA_DB_CONFIG)
@@ -58,7 +58,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
             raise Exception(f"Email '{user_email}' not found in main_db.")
 
 
-        query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id)
+        query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id, env_m)
 
         variables = {}
         count = 1
@@ -143,11 +143,13 @@ def main():
 
     parser.add_argument('--env', required=True, help='Environemt e.g., beta, prod, etc')
     parser.add_argument('--email', required=True, help='User email')
+    parser.add_argument('--env_m', required=True, help='Environemt e.g., beta, prod, etc')
     
     args = parser.parse_args()
     
     env = args.env
     user_email = args.email
+    env_m = args.env_m
 
     pa_secret, main_secret = get_secret(env)
 
@@ -198,7 +200,7 @@ def main():
     #print(PA_DB_CONFIG)
     #print(MAIN_DB_CONFIG)
 
-    db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG, client_id, client_secret, tenant_id)
+    db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG, client_id, client_secret, tenant_id, env_m)
 
 
 if __name__ == "__main__":
