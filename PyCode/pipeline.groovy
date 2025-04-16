@@ -43,18 +43,18 @@ pipeline{
             }
         }
 
-        // stage ('DB Insertions'){
+        stage ('DB Insertions'){
             
-//             steps{
-//                 dir("PyCode"){
-//                     sh ''' 
-//                         . venv/bin/activate
-//                         python3 AzureGenAIResourceDBInsertions.py --env_m $env_main  --user_email $user_email
-//                         python3 ProdCoachDBInsertions.py --env $env_pa  --email $user_email
-//                     '''
-//                 }
-//             }
-//         }
+            steps{
+                dir("PyCode"){
+                    sh '''
+                        . venv/bin/activate
+                        python3 AzureGenAIResourceDBInsertions.py --env_m $env_main  --user_email $user_email
+                        python3 ProdCoachDBInsertions.py --env $env_pa  --email $user_email
+                    '''
+                }
+            }
+        }
 
         stage ('Creation of Action Group and Alerts'){
             steps{
