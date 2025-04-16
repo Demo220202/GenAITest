@@ -50,7 +50,7 @@ pipeline{
                     sh '''
                         . venv/bin/activate
                         python3 AzureGenAIResourceDBInsertions.py --env_m $env_main  --user_email $user_email
-                        python3 ProdCoachDBInsertions.py --env $env_pa  --email $user_email
+                        python3 ProdCoachDBInsertions.py --env $env_pa  --email $user_email --env_m $env_main
                     '''
                 }
             }
