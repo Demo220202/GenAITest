@@ -186,7 +186,8 @@ def main():
         all_resources.extend(resources)
 
     #brand = BRANDS[0].replace("-Pay-As-You-Go", "")
-    brand = BRANDS[0].replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
+    # brand = BRANDS[0].replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
+    brand = BRANDS[0]
     output_json = {
         "subscription_id": SUBSCRIPTION_ID,
         "resources": all_resources,
