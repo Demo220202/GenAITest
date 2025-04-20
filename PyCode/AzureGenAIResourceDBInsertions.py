@@ -18,6 +18,9 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
         main_cursor = main_db_conn.cursor(dictionary=True)
         bot_cursor = bot_db_conn.cursor(dictionary=True)
 
+        query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id,
+                                            env)
+
         ### Step 1: Fetch brand_id from main_db
         #brand_name = "Chase"
         main_cursor.execute("SELECT id FROM brand WHERE name = %s", (brand_name,))
@@ -42,7 +45,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
 
         ### Step 2: Insert into bot_db service_resources
 
-        query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id, env)
+        # query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id, env)
 
         # for key, value in query_variables.items():
         #

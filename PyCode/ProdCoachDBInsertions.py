@@ -35,6 +35,9 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
         pa_cursor = pa_db_conn.cursor(dictionary=True)
         main_cursor = main_db_conn.cursor(dictionary=True)
 
+        query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id,
+                                            env_m)
+
         ### Step 1: Fetch brand_id from main_db
         #brand_name = "Chase"
         main_cursor.execute("SELECT id FROM brand WHERE name = %s", (brand_name,))
@@ -58,7 +61,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
             raise Exception(f"Email '{user_email}' not found in main_db.")
 
 
-        query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id, env_m)
+        # query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id, env_m)
 
         # variables = {}
         # count = 1
