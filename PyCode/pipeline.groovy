@@ -43,29 +43,29 @@ pipeline{
             }
         }
 
-        stage ('DB Insertions'){
-            
-            steps{
-                dir("PyCode"){
-                    sh '''
-                        . venv/bin/activate
-                        python3 AzureGenAIResourceDBInsertions.py --env_m $env_main  --user_email $user_email
-                        python3 ProdCoachDBInsertions.py --env $env_pa  --email $user_email --env_m $env_main
-                    '''
-                }
-            }
-        }
-
-        stage ('Creation of Action Group and Alerts'){
-            steps{
-                dir("PyCode"){
-                    sh '''
-                        . venv/bin/activate
-                        python3 ActionGroupNAlerts.py
-                    '''
-                }
-            }
-        }
+//         stage ('DB Insertions'){
+//
+//             steps{
+//                 dir("PyCode"){
+//                     sh '''
+//                         . venv/bin/activate
+//                         python3 AzureGenAIResourceDBInsertions.py --env_m $env_main  --user_email $user_email
+//                         python3 ProdCoachDBInsertions.py --env $env_pa  --email $user_email --env_m $env_main
+//                     '''
+//                 }
+//             }
+//         }
+//
+//         stage ('Creation of Action Group and Alerts'){
+//             steps{
+//                 dir("PyCode"){
+//                     sh '''
+//                         . venv/bin/activate
+//                         python3 ActionGroupNAlerts.py
+//                     '''
+//                 }
+//             }
+//         }
         
     }
     post {
