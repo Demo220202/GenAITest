@@ -151,13 +151,13 @@ def main():
     client = CognitiveServicesManagementClient(credential, subscription_id)
 
     for resource in resources:
-        account = get_cognitive_account(client, resource['resource_group'], resource['resource_name'])
+        account = get_cognitive_account(client, resource['resource_group'], resource['resource_name_64'])
 
         if account:
             create_or_update_deployment(
                 client,
                 resource['resource_group'],
-                resource['resource_name'],
+                resource['resource_name_64'],
                 resource['deployment_name'],
                 resource['capacity'],
                 resource['model_name'],
@@ -166,12 +166,12 @@ def main():
             )
 
             if resource['sku_name'] != "DataZoneStandard":
-                print(enable_dynamic_quota(subscription_id, resource['resource_group'], resource['resource_name'], resource['model_name'], credential,"2023-10-01-preview"))
+                print(enable_dynamic_quota(subscription_id, resource['resource_group'], resource['resource_name_64'], resource['model_name'], credential,"2023-10-01-preview"))
 
 
-            disable_version_auto_upgrade(subscription_id, resource['resource_group'], resource['resource_name'], resource['model_name'], credential,"2023-10-01-preview")
+            disable_version_auto_upgrade(subscription_id, resource['resource_group'], resource['resource_name_64'], resource['model_name'], credential,"2023-10-01-preview")
 
-            deployment_details = client.deployments.get(resource['resource_group'], resource['resource_name'], resource['model_name'])
+            deployment_details = client.deployments.get(resource['resource_group'], resource['resource_name_64'], resource['model_name'])
             deployment_json = deployment_details.as_dict()
 
             print("\n🔹 Deployment JSON after toggling:\n", json.dumps(deployment_json, indent=4))
