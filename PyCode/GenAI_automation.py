@@ -121,7 +121,7 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
     created_resources = []  # Track created resources
     for resource_type, regions in RESOURCE_TEMPLATE.items():
         for region in regions:
-            resource_name = f"{brand_name}ProdGPTAdvancedStories{resource_type}{region.replace(' ', '')}"
+            resource_name = f"{brand_name}ProdGPTAdvancedStories{resource_type}{region.replace(' ', '')}-Datazone"
             truncated_resource_name = resource_name[:50]
             deployment_name = f"Deploy-{truncated_resource_name}"[:64]
 
