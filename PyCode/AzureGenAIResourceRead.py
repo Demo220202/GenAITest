@@ -64,9 +64,18 @@ def getRegionNType(resource_client, resource_group_name, resource_name):
 
     resources = resource_client.resources.list_by_resource_group(resource_group_name)
 
+    resource_type = None
+
+    if "PredictionAuth" in resource_name or "PrAuth" in resource_name:
+        resource_type = "Authoring"
+    elif "Evaluation" in resource_name:
+        resource_type = "Evaluation"
+    elif "Prediction" in resource_name:
+        resource_type = "Prediction"
+
     for resource in resources:
         if resource.name == resource_name:
-            return resource.type, resource.location
+            return resource_type, resource.location
 
 
 def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id, env):
