@@ -122,14 +122,15 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
     for resource_type, regions in RESOURCE_TEMPLATE.items():
         for region in regions:
             resource_name = f"{brand_name}ProdGPTAdvancedStories{resource_type}{region.replace(' ', '')}-Datazone"
-            resource_name_64 = f"{brand_name}ProdGPTAdvancedStories{resource_type}{region.replace(' ', '')}-Datazone"[:64]
+            if region == "NorthCentralUS" and len(resource_name) >= 63:
+                resource_name = f"{brand_name}ProdGPTAdvancedStoriesPrAuth{region.replace(' ', '')}-Datazone"
             truncated_resource_name = resource_name[:50]
             deployment_name = f"Deploy-{truncated_resource_name}"[:64]
 
             # endpoint_url = f"https://{resource_name.lower()}.openai.azure.com/"
-            endpoint_url = resource_name_64.lower()
+            endpoint_url = resource_name.lower()
 
-            print(f"Creating OpenAI Resource: {resource_name_64} in {region}")
+            print(f"Creating OpenAI Resource: {resource_name} in {region}")
 
             deployment_properties = {
                 "mode": DeploymentMode.incremental,
@@ -140,7 +141,7 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
                         {
                             "type": "Microsoft.CognitiveServices/accounts",
                             "apiVersion": "2023-05-01",
-                            "name": resource_name_64,
+                            "name": resource_name,
                             "location": region,
                             "sku": {"name": "S0"},
                             "kind": "OpenAI",
@@ -165,7 +166,6 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
             created_resources.append({
                 "resource_group": rg_name,
                 "resource_name": resource_name,
-                "resource_name_64": resource_name_64,
                 "region": region,
                 "deployment_name": DEPLOYMENT_MODEL_NAME,
                 "capacity": capacity,

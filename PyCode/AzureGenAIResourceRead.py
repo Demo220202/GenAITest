@@ -83,7 +83,8 @@ def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id
         try:
             # print(resource.name[27:])
             # print(len(res_grp_name) + 4)
-            res_type, region = get_type_region(resource.name[len(res_grp_name) + length:])
+            resource_ref = resource.name.replace("-DataZone", "")
+            res_type, region = get_type_region(resource_ref[len(res_grp_name) + length:])
             # print(res_type, region)
 
             keys = cognitive_client.accounts.list_keys(resource_group_name, resource.name)
