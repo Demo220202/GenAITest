@@ -57,7 +57,16 @@ def get_type_region(resource):
             region = resource[i:]
             break
 
+    print("Through first function: ", res_type, region)
     return res_type, region
+
+def getRegionNType(resource_client, resource_group_name, resource_name):
+
+    resources = resource_client.resources.list_by_resource_group(resource_group_name)
+
+    for resource in resources:
+        if resource.name == resource_name:
+            return resource.type, resource.location
 
 
 def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id, env):
@@ -69,6 +78,7 @@ def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id
     credential = authenticate()
     client = ResourceManagementClient(credential, subscription_id)
     cognitive_client = CognitiveServicesManagementClient(credential, subscription_id)
+    resource_client = ResourceManagementClient(credential, subscription_id)
 
     # Fetch resources in the resource group
     resources = client.resources.list_by_resource_group(resource_group_name)
@@ -85,6 +95,7 @@ def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id
             # print(len(res_grp_name) + 4)
             resource_ref = resource.name.replace("-DataZone", "")
             res_type, region = get_type_region(resource_ref[len(res_grp_name) + length:])
+            res_type, region = getRegionNType(resource_client, resource_group_name, resource.name)
             # print(res_type, region)
 
             keys = cognitive_client.accounts.list_keys(resource_group_name, resource.name)
