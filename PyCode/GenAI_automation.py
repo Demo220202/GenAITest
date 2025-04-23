@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import re
 import subprocess
 import argparse
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
@@ -67,7 +68,19 @@ def authenticate():
     )
     return credentials
 
+def clean_brand_name(brand):
+    # Remove all non-alphanumeric characters
+    cleaned = re.sub(r'[^A-Za-z0-9]', '', brand)
+    return cleaned
 
+def shorten_region_name(region):
+
+    shorten_region = ""
+    for i in range(len(region)):
+        if (region[i] >= 'A' and region[i] <= 'Z') or region[i].isdigit():
+            shorten_region += region[i]
+
+    return shorten_region
 
 #parser.add_argument('--client_id', required=True, help='CLIENT_ID')
 #parser.add_argument('--client_secret', required=True, help='CLIENT_SECRET')
@@ -117,9 +130,10 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
     created_resources = []  # Track created resources
     for resource_type, regions in RESOURCE_TEMPLATE.items():
         for region in regions:
-            resource_name = f"{brand_name}ProdGPTAdvancedStories{resource_type}{region.replace(' ', '')}-Datazone"
-            if region == "NorthCentralUS" and len(resource_name) >= 63:
-                resource_name = f"{brand_name}ProdGPTAdvancedStoriesPrAuth{region.replace(' ', '')}-Datazone"
+            region_short_name = shorten_region_name(region)
+            resource_name = f"{brand_name}ProdGPTAdvancedStories{resource_type}{region_short_name.replace(' ', '')}DZ"
+            # if region == "NorthCentralUS" and len(resource_name) >= 63:
+            #     resource_name = f"{brand_name}ProdGPTAdvancedStoriesPrAuth{region.replace(' ', '')}-Datazone"
             truncated_resource_name = resource_name[:50]
             deployment_name = f"Deploy-{truncated_resource_name}"[:64]
 
@@ -178,7 +192,8 @@ def main():
 
     all_resources = []
     for brand in BRANDS:
-        brand = brand.replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
+        brand = clean_brand_name(brand)
+        # brand = brand.replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
         rg_name = create_resource_group(brand)
         resources = create_openai_resources(rg_name, brand, SUBSCRIPTION_ID)
         all_resources.extend(resources)

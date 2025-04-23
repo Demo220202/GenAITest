@@ -47,10 +47,11 @@ def get_type_region(resource):
 
     for i in range(len(resource)):
 
-        if "PredictionAuth" in resource:
+        if "PredictionAuth" in resource or "PrAuth" in resource:
 
             res_type = "Authoring"
             region = "NorthCentralUS"
+            break
 
         elif i > 0 and resource[i] >= 'A' and resource[i] <= 'Z':
             res_type = resource[:i]
@@ -102,7 +103,7 @@ def getQueryVariables(subs_id, res_grp_name, client_id, client_secret, tenant_id
         try:
             # print(resource.name[27:])
             # print(len(res_grp_name) + 4)
-            resource_ref = resource.name.replace("-DataZone", "")
+            resource_ref = resource.name.replace("-Datazone", "")
             res_type, region = get_type_region(resource_ref[len(res_grp_name) + length:])
             res_type, region = getRegionNType(resource_client, resource_group_name, resource.name)
             # print(res_type, region)
