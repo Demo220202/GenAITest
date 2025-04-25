@@ -35,8 +35,8 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
         pa_cursor = pa_db_conn.cursor(dictionary=True)
         main_cursor = main_db_conn.cursor(dictionary=True)
 
-        query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id,
-                                            env_m)
+        # query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id,
+        #                                     env_m)
 
         ### Step 1: Fetch brand_id from main_db
         #brand_name = "Chase"
@@ -162,11 +162,16 @@ def main():
 
     # Database connection details
 
-    config = load_config('openai_resources.json')
-    subscription_id = config['subscription_id']
-    resources = config['resources']
-    brand_name = config['brand_name']
-    resource_group_name = resources[0]["resource_group"] 
+    # config = load_config('openai_resources.json')
+    # subscription_id = config['subscription_id']
+    # resources = config['resources']
+    # brand_name = config['brand_name']
+    # resource_group_name = resources[0]["resource_group"]
+
+    subscription_id = ""
+    resources = ""
+    brand_name = "Prime Marketing"
+    resource_group_name = ""
 
     # MAIN_DB_CONFIG = {
     #     "host": "localhost",
