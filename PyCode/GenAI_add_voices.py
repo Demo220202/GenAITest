@@ -87,8 +87,8 @@ if __name__ == "__main__":
         "database": bot_secret["dbname"]
     }
 
-    print(MAIN_DB_CONFIG)
-    print(BOT_DB_CONFIG)
+    # print(MAIN_DB_CONFIG)
+    # print(BOT_DB_CONFIG)
 
     try:
         conn = mysql.connector.connect(
