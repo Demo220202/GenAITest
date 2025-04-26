@@ -8,7 +8,7 @@ def load_config(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
 
-def db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG):
+def db_execution(brand_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG):
     # Connect to databases
     try:
         pa_db_conn = mysql.connector.connect(**PA_DB_CONFIG)
@@ -47,50 +47,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
 
         if not details:
             raise Exception(f"{brand_id} not found in call_analyzer_configuration table")
-    
-        ### Step 2: Insert into bot_db service_resources
 
-        # query_variables = getQueryVariables(subscription_id, resource_group_name)
-
-        # for key, value in query_variables.items():
-        #
-        #     resource_name = key
-        #     endpoint = value["endpoint"]
-        #     key = value["keys"]
-        #     region = value["region"].lower()
-        #     type = value["type"]
-        #
-        #     insert_service_resource = """
-        #     INSERT INTO service_resources (brand_id, service, resource_type, resource, resource_id, region, endpoint, `key`)
-        #     VALUES (%s, 'Azure', %s, %s, %s, %s, %s, %s)
-        #     """
-        #
-        #     bot_cursor.execute(insert_service_resource, (brand_id, type, resource_name, resource_name, region, endpoint, key))
-        #     bot_db_conn.commit()
-        #     print("✅ Inserted into service_resources.")
-        #
-        #     ### Step 3: Fetch newly inserted resource ID
-        #     bot_cursor.execute(
-        #         "SELECT id FROM service_resources WHERE brand_id = %s AND resource = %s",
-        #         (brand_id, resource_name)
-        #     )
-        #     resource = bot_cursor.fetchone()
-        #
-        #     if not resource:
-        #         raise Exception("❌ Error: Resource ID not found after insert.")
-        #
-        #     resource_id = resource["id"]
-        #     print(f"✅ Fetched Resource ID: {resource_id}")
-        #
-        #     ### Step 4: Insert into resource_model
-        #     insert_resource_model = """
-        #     INSERT INTO resource_model (model_type, model_name, resource_id, inactive, created_by, updated_by)
-        #     VALUES ('Deployment', 'gpt-4o', %s, 0, %s, %s)
-        #     """
-        #
-        #     bot_cursor.execute(insert_resource_model, (resource_id, user_id, user_id))
-        #     bot_db_conn.commit()
-        #     print("✅ Inserted into resource_model.")
 
     except Exception as e:
         print(f"❌ Error: {e}")
@@ -118,12 +75,14 @@ def main():
     parser.add_argument('--env_m', required=True, help='Environemt e.g., beta, prod, etc')
     parser.add_argument('--env_p', required=True, help='Environemt e.g., pa, prod, etc')
     parser.add_argument("--user_email", required=True, help="User email")
+    parser.add_argument('--brands', required=True, help='Comma-separated list of brands')
 
     args = parser.parse_args()
     
     env_m = args.env_m
     env_p = args.env_p
     user_email = args.user_email
+    brand_names = args.brands.split(',')
     
     pa_secret, main_secret = get_secret(env_p)
 
@@ -132,12 +91,8 @@ def main():
 
     # Database connection details
 
-    brand_name = "Chase"
+    brand_name = brand_names[0]
         # "Wolters Kluwer" # as per brand table
-    subscription_id = ""
-        # "fee8cb00-2601-4963-a4f9-793ed834e3ab"
-    #resource_group_name = config["resources"][0]["resource_group"]
-    resource_group_name = ""
     
 
     # MAIN_DB_CONFIG = {
@@ -180,7 +135,7 @@ def main():
     #     cursor.execute(query, params or ())
     #     return cursor.fetchall()
 
-    db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG)
+    db_execution(brand_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG)
 
 
 if __name__ == "__main__":

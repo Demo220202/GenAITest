@@ -132,9 +132,9 @@ if __name__ == "__main__":
         print(",\n".join(preview_rows) + ";\n")
 
         # Execute
-        # cursor.executemany(insert_query, all_values)
+        cursor.executemany(insert_query, all_values)
         conn.commit()
-        # print(f"✅ Inserted {cursor.rowcount} rows successfully!")
+        print(f"✅ Inserted {cursor.rowcount} rows successfully!")
 
     except Error as e:
         print(f"❌ Error occurred: {e}")
