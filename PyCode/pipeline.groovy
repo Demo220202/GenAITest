@@ -49,6 +49,7 @@ pipeline{
                 dir("PyCode"){
                     sh '''
                         . venv/bin/activate
+                        python3 GenAI_add_voices.py --env_m $env_main --brands "$brand_names"
                         python3 AzureGenAIResourceDBInsertions.py --env_m $env_main  --user_email $user_email
                         python3 ProdCoachDBInsertions.py --env $env_pa  --email $user_email --env_m $env_main
                     '''
