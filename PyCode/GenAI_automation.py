@@ -9,6 +9,7 @@ from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.resource.resources.models import Deployment, DeploymentMode
 from azure.cli.core import get_default_cli
 # from CapacityOfDeploymentResources import *
+from BrandnamebySubs import *
 from MaximumQuotaAzureDeploymentResources import *
 
 
@@ -32,6 +33,8 @@ parser.add_argument('--deployment_model_name', required=True, help='Deployment M
 parser.add_argument('--deployment_model_version', required=True, help='Deployment Model Version')
 parser.add_argument('--brands', required=True, help='Comma-separated list of brands')
 parser.add_argument('--deployment_type', required=True, help='Deployment Type')
+parser.add_argument('--env_m', required=True, help='Main environment')
+parser.add_argument('--email', required=True, help='User email')
 
 args = parser.parse_args()
 
@@ -41,6 +44,9 @@ REGION = args.region
 DEPLOYMENT_TYPE = args.deployment_type
 DEPLOYMENT_MODEL_NAME = args.deployment_model_name
 DEPLOYMENT_MODEL_VERSION = args.deployment_model_version
+
+env = args.env_m
+email = args.email
 
 BRANDS = args.brands.split(",")
 
@@ -201,6 +207,7 @@ def main():
     #brand = BRANDS[0].replace("-Pay-As-You-Go", "")
     # brand = BRANDS[0].replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
     brand = BRANDS[0]
+    brand = getBrandNamebySubscription(env, SUBSCRIPTION_ID, email)
     output_json = {
         "subscription_id": SUBSCRIPTION_ID,
         "resources": all_resources,

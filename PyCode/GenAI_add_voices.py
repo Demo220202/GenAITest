@@ -1,3 +1,4 @@
+import json
 import argparse
 import mysql.connector
 from mysql.connector import Error
@@ -48,22 +49,29 @@ names = [
     ('{Mandarin} - Liang', 'female', 'FjfxJryh105iTLL4ktHB', 'Elevenlabs', None, None, 0),
 ]
 
+def load_config(file_path):
+    with open(file_path, 'r') as f:
+        return json.load(f)
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Azure GenAI Resource DB Inserions")
 
     parser.add_argument('--env_m', required=True, help='Environemt e.g., pa, prod, etc')
-    parser.add_argument('--brands', required=True, help='Comma-separated list of brands')
+    # parser.add_argument('--brands', required=True, help='Comma-separated list of brands')
 
     args = parser.parse_args()
 
     env = args.env_m
-    brand_names = args.brands.split(',')
+    # brand_names = args.brands.split(',')
+
+    # brand_name = brand_names[0]  # As per DB
+
+    config = load_config('openai_resources.json')
+    brand_name = config['brand_name']
 
     # env = "prod"
     main_secret, bot_secret = get_secret(env)
-
-    brand_name = brand_names[0] # As per DB
 
 
     # MAIN_DB_CONFIG = {
