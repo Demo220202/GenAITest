@@ -58,6 +58,12 @@ RESOURCE_TEMPLATE = {
     "Prediction": ["WestUS", "EastUS2"]
 }
 
+shorten_resource_type = {
+    "PredictionAuth" : "PrAuth",
+    "Evaluation" : "Eval",
+    "Prediction" : "Pred"
+}
+
 
 def authenticate():
     client_id = os.getenv("ARM_CLIENT_ID")
@@ -138,8 +144,8 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
         for region in regions:
             region_short_name = shorten_region_name(region)
             resource_name = f"{brand_name}ProdGPTAdvancedStories{resource_type}{region_short_name.replace(' ', '')}DZ"
-            # if region == "NorthCentralUS" and len(resource_name) >= 63:
-            #     resource_name = f"{brand_name}ProdGPTAdvancedStoriesPrAuth{region.replace(' ', '')}-Datazone"
+            if len(resource_name) >= 63:
+                resource_name = f"{brand_name}ProdGPTAdvancedStories{shorten_resource_type[resource_type]}{region.replace(' ', '')}DZ"
             truncated_resource_name = resource_name[:50]
             deployment_name = f"Deploy-{truncated_resource_name}"[:64]
 
