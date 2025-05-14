@@ -2,6 +2,7 @@ import requests
 import json
 import sys
 import os
+import subprocess
 
 
 def get_quota_details(subscription_id, region, access_token, deployment_name, sku_name):
@@ -53,8 +54,19 @@ def get_quota_details(subscription_id, region, access_token, deployment_name, sk
 
 def get_max_capacity(subscription_id, region, deployment_name, sku_name):
 
-    access_token = os.popen("az account get-access-token --query accessToken -o tsv").read().strip()
+    # access_token = os.popen("az account get-access-token --query accessToken -o tsv").read().strip()
     #sku_name = "Standard" # As per current scenario
+
+    try:
+        result = subprocess.check_output([
+            'az', 'account', 'get-access-token',
+            '--query', 'accessToken',
+            '-o', 'tsv'
+        ], stderr=subprocess.STDOUT).decode('utf-8').strip()
+        access_token = result
+    except subprocess.CalledProcessError as e:
+        print("Failed to get access token:", e.output.decode())
+        raise
 
     quota_limit = get_quota_details(subscription_id, region, access_token, deployment_name, sku_name)
 
