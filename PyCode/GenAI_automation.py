@@ -212,7 +212,6 @@ def main():
 
     #brand = BRANDS[0].replace("-Pay-As-You-Go", "")
     # brand = BRANDS[0].replace("-Pay-As-You-Go", "").replace("-", "").replace(" ", "")
-    brand = BRANDS[0]
     brand = getBrandNamebySubscription(env, SUBSCRIPTION_ID, email)
     output_json = {
         "subscription_id": SUBSCRIPTION_ID,

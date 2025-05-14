@@ -9,7 +9,7 @@ def load_config(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
 
-def db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id, env):
+def db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id, env, model_name):
     # Connect to databases
     try:
         main_db_conn = mysql.connector.connect(**MAIN_DB_CONFIG)
@@ -80,10 +80,10 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
             ### Step 4: Insert into resource_model
             insert_resource_model = """
             INSERT INTO resource_model (model_type, model_name, resource_id, inactive, created_by, updated_by)
-            VALUES ('Deployment', 'gpt-4o', %s, 0, %s, %s)
+            VALUES ('Deployment', %s, %s, 0, %s, %s)
             """
 
-            bot_cursor.execute(insert_resource_model, (resource_id, user_id, user_id))
+            bot_cursor.execute(insert_resource_model, (model_name, resource_id, user_id, user_id))
             bot_db_conn.commit()
             print("✅ Inserted into resource_model.")
 
@@ -127,6 +127,8 @@ def main():
     brand_name = config['brand_name']
     resource_group_name = resources[0]["resource_group"]
 
+    model_name = resources[0]["model_name"]
+
     # subscription_id = ""
     # resources = ""
     # brand_name = "Prime Marketing"
@@ -168,7 +170,7 @@ def main():
     #     cursor.execute(query, params or ())
     #     return cursor.fetchall()
 
-    db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id, env_m)
+    db_execution(brand_name, subscription_id, resource_group_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG, client_id, client_secret, tenant_id, env_m, model_name)
 
 
 if __name__ == "__main__":
