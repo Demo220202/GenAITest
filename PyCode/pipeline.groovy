@@ -10,6 +10,8 @@ pipeline{
         stage('Azure Login') {
             steps {
                 sh '''
+                    echo "CLIENT_ID: $AZURE_CLIENT_ID"
+                    echo "TENANT_ID: $AZURE_TENANT_ID"
                     echo "Logging in to Azure..."
                     az login --service-principal \
                         --username "$AZURE_CLIENT_ID" \
