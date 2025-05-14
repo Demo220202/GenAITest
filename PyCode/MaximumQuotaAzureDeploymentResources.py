@@ -3,7 +3,22 @@ import json
 import sys
 import os
 import subprocess
+from azure.identity import DefaultAzureCredential, ClientSecretCredential
 
+def authenticate():
+    client_id = os.getenv("ARM_CLIENT_ID")
+    client_secret = os.getenv("ARM_CLIENT_SECRET")
+    tenant_id = os.getenv("ARM_TENANT_ID")
+
+    if not all([client_id, client_secret, tenant_id]):
+        raise ValueError("Missing one or more Azure credentials. Please check your environment variables.")
+
+    credentials = ClientSecretCredential(
+        client_id=client_id,
+        client_secret=client_secret,
+        tenant_id=tenant_id
+    )
+    return credentials
 
 def get_quota_details(subscription_id, region, access_token, deployment_name, sku_name):
     url = f"https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.CognitiveServices/locations/{region}/usages?api-version=2023-05-01"
@@ -55,17 +70,9 @@ def get_quota_details(subscription_id, region, access_token, deployment_name, sk
 def get_max_capacity(subscription_id, region, deployment_name, sku_name):
 
     # access_token = os.popen("az account get-access-token --query accessToken -o tsv").read().strip()
+    credential = authenticate()
+    access_token = credential.get_token("https://management.azure.com/.default").token
     #sku_name = "Standard" # As per current scenario
-
-    try:
-        access_token = subprocess.check_output([
-            'az', 'account', 'get-access-token',
-            '--query', 'accessToken',
-            '-o', 'tsv'
-        ], stderr=subprocess.STDOUT).decode('utf-8').strip()
-    except subprocess.CalledProcessError as e:
-        print("Azure CLI token fetch failed. Output:\n", e.output.decode())
-        raise
 
     quota_limit = get_quota_details(subscription_id, region, access_token, deployment_name, sku_name)
 
