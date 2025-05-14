@@ -6,6 +6,17 @@ pipeline{
         ARM_TENANT_ID = credentials('ARM_TENANT_ID')
     }
     stages{
+
+        stage('Azure Login') {
+            steps {
+                sh '''
+                az login --service-principal \
+                    --username "$AZURE_CLIENT_ID" \
+                    --password "$AZURE_CLIENT_SECRET" \
+                    --tenant "$AZURE_TENANT_ID"
+                '''
+            }
+        }
         
         stage ('Resource Group and OpenAI Resource Creation'){
             steps{
