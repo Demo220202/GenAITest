@@ -58,14 +58,13 @@ def get_max_capacity(subscription_id, region, deployment_name, sku_name):
     #sku_name = "Standard" # As per current scenario
 
     try:
-        result = subprocess.check_output([
+        access_token = subprocess.check_output([
             'az', 'account', 'get-access-token',
             '--query', 'accessToken',
             '-o', 'tsv'
         ], stderr=subprocess.STDOUT).decode('utf-8').strip()
-        access_token = result
     except subprocess.CalledProcessError as e:
-        print("Failed to get access token:", e.output.decode())
+        print("Azure CLI token fetch failed. Output:\n", e.output.decode())
         raise
 
     quota_limit = get_quota_details(subscription_id, region, access_token, deployment_name, sku_name)
