@@ -3,6 +3,7 @@ import os
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.mgmt.monitor import MonitorManagementClient
 from azure.mgmt.resource import ResourceManagementClient
+import re
 
 alerts = []
 
@@ -18,6 +19,11 @@ email_receivers = [
     {"name": "Yashwant Keswani", "email": "yashwantk@zenarate.com"},
     {"name": "Praveen Balachandar", "email": "praveenb@zenarate.com"},
 ]
+
+def clean_brand_name(brand):
+    # Remove all non-alphanumeric characters
+    cleaned = re.sub(r'[^A-Za-z0-9]', '', brand)
+    return cleaned
 
 def authenticate():
     client_id = os.getenv("ARM_CLIENT_ID")
@@ -162,6 +168,7 @@ def main():
 
     config = load_config('openai_resources.json')
     brand_name = config["brand_name"]
+    brand_name = clean_brand_name(brand_name)
     subscription_id = config['subscription_id']
     resources = config['resources']
 
