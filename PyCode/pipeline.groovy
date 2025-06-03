@@ -11,10 +11,10 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        python3.10 -m venv venv
-                        . venv/bin/activate
-                        # pip install --upgrade pip
-                        # pip install -r requirements.txt
+                        python3.10 -m venv venvgenai
+                        . venvgenai/bin/activate
+                        pip install --upgrade pip
+                        pip install -r requirements.txt
                         python3 GenAI_automation.py --subscription_id $subscription_id --region $rg_region --deployment_model_name $dep_model_name --deployment_model_version $dep_model_version --brands "$brand_names" --deployment_type $dep_type --env_m $env_main --email $user_email
                     '''
                 }
@@ -25,7 +25,7 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        . venv/bin/activate
+                        . venvgenai/bin/activate
                         python3 GenAI_automation_P2.py
                     '''
                 }
@@ -38,7 +38,7 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        . venv/bin/activate
+                        . venvgenai/bin/activate
                         python3 GenAI_add_voices.py --env_m $env_main
                         python3 AzureGenAIResourceDBInsertions.py --env_m $env_main  --user_email $user_email
                         python3 ProdCoachDBInsertions.py --env $env_pa  --email $user_email --env_m $env_main
@@ -51,7 +51,7 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        . venv/bin/activate
+                        . venvgenai/bin/activate
                         python3 ProdDBConnCheck.py --env_m $env_main  --env_p $env_pa --user_email $user_email --brands "$brand_names"
                     '''
                 }
@@ -62,7 +62,7 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        . venv/bin/activate
+                        . venvgenai/bin/activate
                         python3 ActionGroupNAlerts.py
                     '''
                 }
@@ -76,20 +76,24 @@ pipeline{
                 sh """
                    cat openai_resources.json
                    rm openai_resources.json
-                   cat alert_resources.json
-                   rm alert_resources.json
+                   cat alert_resources.json || echo "alert_resources.json not found"
+                   rm -f alert_resources.json
                """
             }
         }
         failure {
             dir('PyCode'){
                sh '''
-                   . venv/bin/activate
+                   . venvgenai/bin/activate
                    python3 GenAI_automation_P2_Revert.py
-                   python3 ActionGroupNAlerts_Revert.py
+                   if [ -f alert_resources.json ]; then
+                       python3 ActionGroupNAlerts_Revert.py
+                   else
+                       echo "alert_resources.json not found, skipping ActionGroupNAlerts_Revert.py"
+                   fi
                    python3 GenAI_automation_Revert.py --subscription_id $subscription_id
-                   rm openai_resources.json
-                   rm alert_resources.json
+                   rm -f openai_resources.json
+                   rm -f alert_resources.json
                '''
             }
         }
