@@ -22,6 +22,14 @@ from MaximumQuotaAzureDeploymentResources import *
 #     parser.add_argument('--brands', required=True, help='Comma-separated list of brands')
 #     return parser.parse_args()
 
+def version_based_deployment_name(deployment_name, deployment_version):
+
+    deployment_version = deployment_version.replace('-', '')[4:]
+    deployment_name = f"{deployment_name}-{deployment_version}"
+
+    print(deployment_name)
+
+    return deployment_name
 
 
 parser = argparse.ArgumentParser(description='Deploy OpenAI Resources')
@@ -44,6 +52,9 @@ REGION = args.region
 DEPLOYMENT_TYPE = args.deployment_type
 DEPLOYMENT_MODEL_NAME = args.deployment_model_name
 DEPLOYMENT_MODEL_VERSION = args.deployment_model_version
+
+DEPLOYMENT_MODEL = DEPLOYMENT_MODEL_NAME
+# DEPLOYMENT_MODEL_NAME = version_based_deployment_name(DEPLOYMENT_MODEL, DEPLOYMENT_MODEL_VERSION)
 
 env = args.env_m
 email = args.email
@@ -191,7 +202,7 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
                 "region": region,
                 "deployment_name": DEPLOYMENT_MODEL_NAME,
                 "capacity": capacity,
-                "model_name": DEPLOYMENT_MODEL_NAME,
+                "model_name": DEPLOYMENT_MODEL,
                 "model_version": DEPLOYMENT_MODEL_VERSION,
                 "sku_name": DEPLOYMENT_TYPE
             })
