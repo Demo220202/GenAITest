@@ -193,7 +193,7 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
                 Deployment(properties=deployment_properties)
             ).result()  # Wait for completion
 
-            capacity = get_max_capacity(subscription_id, region, DEPLOYMENT_MODEL_NAME, DEPLOYMENT_TYPE)
+            capacity = get_max_capacity(subscription_id, region, DEPLOYMENT_MODEL, DEPLOYMENT_TYPE)
             #
             # Add resource details to list
             created_resources.append({
