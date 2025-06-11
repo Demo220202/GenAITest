@@ -54,7 +54,7 @@ DEPLOYMENT_MODEL_NAME = args.deployment_model_name
 DEPLOYMENT_MODEL_VERSION = args.deployment_model_version
 
 DEPLOYMENT_MODEL = DEPLOYMENT_MODEL_NAME
-# DEPLOYMENT_MODEL_NAME = version_based_deployment_name(DEPLOYMENT_MODEL, DEPLOYMENT_MODEL_VERSION)
+DEPLOYMENT_MODEL_NAME = version_based_deployment_name(DEPLOYMENT_MODEL, DEPLOYMENT_MODEL_VERSION)
 
 env = args.env_m
 email = args.email
