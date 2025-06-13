@@ -26,7 +26,7 @@ def load_config(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
 
-def db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG, client_id, client_secret, tenant_id, env_m):
+def db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG, client_id, client_secret, tenant_id, env_m, dep_model_name):
     # Connect to databases
     try:
         pa_db_conn = mysql.connector.connect(**PA_DB_CONFIG)
@@ -83,18 +83,20 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
 
         print(json.dumps(variables, indent=2))
 
+        print("Deployment Name used : ", dep_model_name)
+
         json_config = json.dumps({
             "api_base": variables["Evaluation_url_1"],
             "api_key": variables["Evaluation_key_1"],
             "api_version": "2023-07-01-preview",
-            "engine": "gpt-4o",
+            "engine": dep_model_name,
             "system_prompt": "You are an expert skills evaluator on a call transcript.",
             "deployment_options": [
                 {
                     "api_base": variables["Evaluation_url_1"],
                     "api_key": variables["Evaluation_key_1"],
                     "api_version": "2023-07-01-preview",
-                    "engine": "gpt-4o",
+                    "engine": dep_model_name,
                     "system_prompt": "You are an expert skills evaluator on a call transcript.",
                     "start_range": 0,
                     "end_range": 49
@@ -103,7 +105,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
                     "api_base": variables["Evaluation_url_2"],
                     "api_key": variables["Evaluation_key_2"],
                     "api_version": "2023-07-01-preview",
-                    "engine": "gpt-4o",
+                    "engine": dep_model_name,
                     "system_prompt": "You are an expert skills evaluator on a call transcript.",
                     "start_range": 49,
                     "end_range": 101
@@ -147,9 +149,9 @@ def main():
     parser.add_argument('--env', required=True, help='Environemt e.g., beta, prod, etc')
     parser.add_argument('--email', required=True, help='User email')
     parser.add_argument('--env_m', required=True, help='Environemt e.g., beta, prod, etc')
-    
+
     args = parser.parse_args()
-    
+
     env = args.env
     user_email = args.email
     env_m = args.env_m
@@ -167,6 +169,7 @@ def main():
     resources = config['resources']
     brand_name = config['brand_name']
     resource_group_name = resources[0]["resource_group"]
+    dep_model_name = resources[0]["deployment_name"]
 
     # subscription_id = ""
     # resources = ""
@@ -208,7 +211,7 @@ def main():
     #print(PA_DB_CONFIG)
     #print(MAIN_DB_CONFIG)
 
-    db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG, client_id, client_secret, tenant_id, env_m)
+    db_execution(brand_name, subscription_id, resource_group_name, user_email, PA_DB_CONFIG, MAIN_DB_CONFIG, client_id, client_secret, tenant_id, env_m, dep_model_name)
 
 
 if __name__ == "__main__":
