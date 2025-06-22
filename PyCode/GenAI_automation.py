@@ -156,9 +156,9 @@ def create_openai_resources(rg_name, brand_name, subscription_id):
             region_short_name = shorten_region_name(region)
             resource_name = f"{brand_name}ProdGPTAdvancedStories{resource_type}{region_short_name.replace(' ', '')}DZ"
             if len(resource_name) >= 63:
-                resource_name = f"{brand_name}ProdGPTAdvancedStories{shorten_resource_type[resource_type]}{region.replace(' ', '')}DZ"
+                resource_name = f"{brand_name}ProdGPTAdvancedStories{shorten_resource_type[resource_type]}{region_short_name.replace(' ', '')}DZ"
                 if len(resource_name) >= 63:
-                    resource_name = f"{brand_name}ProdGPTAS{shorten_resource_type[resource_type]}{region.replace(' ', '')}DZ"
+                    resource_name = f"{brand_name}ProdGPTAS{shorten_resource_type[resource_type]}{region_short_name.replace(' ', '')}DZ"
             truncated_resource_name = resource_name[:50]
             deployment_name = f"Deploy-{truncated_resource_name}"[:64]
 
