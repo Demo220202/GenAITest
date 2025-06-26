@@ -66,7 +66,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
 
             ### Step 3: Fetch newly inserted resource ID
             bot_cursor.execute(
-                "SELECT id FROM service_resources WHERE brand_id = %s AND resource = %s",
+                "SELECT id FROM service_resources WHERE brand_id = %s AND resource = %s and inactive = 0",
                 (brand_id, resource_name)
             )
             resource = bot_cursor.fetchone()
