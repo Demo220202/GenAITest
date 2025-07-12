@@ -46,6 +46,11 @@ def get_secret(env):
         secret_name_bot = "zenarate/beta/db/bot/root"
         region_name = "us-west-1"
         return fetch_secret(secret_name_main, region_name), fetch_secret(secret_name_bot, region_name)
+    elif env == "local":
+        secret_name_main = "zenarate/adilocal/db/main/root"
+        secret_name_bot = "zenarate/adilocal/db/bot/root"
+        region_name = "us-west-1"
+        return fetch_secret(secret_name_main, region_name), fetch_secret(secret_name_bot, region_name)
     elif env == "pa":
         secret_name_pa = "zenarate/prod-ca/db/coach/root"
         secret_name_main = "zenarate/prod/db/main/root"
