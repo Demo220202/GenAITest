@@ -11,7 +11,7 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        python3.13 -m venv venvgenai
+                        python3 -m venv venvgenai
                         . venvgenai/bin/activate
                         pip install --upgrade pip
                         pip install -r requirements.txt
