@@ -203,7 +203,7 @@ def main():
 
     PA_DB_CONFIG = None
 
-    if env == "pa":
+    if env == "pa" or env == "pa_local":
 
         PA_DB_CONFIG = {
             "host": pa_secret["host"],
