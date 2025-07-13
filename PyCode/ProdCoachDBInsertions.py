@@ -114,17 +114,28 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
         }, separators=(",", ":"))
 
         # SQL query with placeholders
-        insert_ca_configs = '''
-            INSERT INTO `call_analyzer_configuration`
-            (`configuration_type`, `configuration_value`, `extra_parameter`, `brand_id`, `inactive`, `created_at`, `created_by`, `updated_at`, `updated_by`)
-            VALUES (%s, %s, %s, %s, %s, NOW(), %s, NOW(), %s);
-        '''
 
-        # Execute the query safely
-        pa_cursor.execute(insert_ca_configs,
-                          ('gpt_story_evaluation_config', 'general', json_config, brand_id, 0, 8413, 8413))
-        pa_db_conn.commit()
-        print("Data inserted successfully.")
+        # ✅ Check if entry already exists
+        pa_cursor.execute("""
+                    SELECT COUNT(*) AS count FROM call_analyzer_configuration
+                    WHERE brand_id = %s AND configuration_type = %s AND configuration_value = %s AND extra_parameter = %s AND inactive = 0
+                """, (brand_id, 'gpt_story_evaluation_config', 'general', json_config))
+
+        result = pa_cursor.fetchone()
+
+        if result["count"] > 0:
+            print(f"⚠️ Configuration already exists for brand_id {brand_id} — skipping insert.")
+        else:
+            # ✅ Proceed with insert
+            insert_ca_configs = '''
+                        INSERT INTO `call_analyzer_configuration`
+                        (`configuration_type`, `configuration_value`, `extra_parameter`, `brand_id`, `inactive`, `created_at`, `created_by`, `updated_at`, `updated_by`)
+                        VALUES (%s, %s, %s, %s, %s, NOW(), %s, NOW(), %s);
+                    '''
+            pa_cursor.execute(insert_ca_configs,
+                              ('gpt_story_evaluation_config', 'general', json_config, brand_id, 0, 8413, 8413))
+            pa_db_conn.commit()
+            print("✅ Data inserted into call_analyzer_configuration.")
 
     except Exception as e:
         print(f"❌ Error: {e}")

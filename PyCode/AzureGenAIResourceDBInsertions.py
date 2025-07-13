@@ -21,54 +21,58 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
         query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id,
                                             env)
 
-        ### Step 1: Fetch brand_id from main_db
-        #brand_name = "Chase"
+        # Fetch brand_id
         main_cursor.execute("SELECT id FROM brand WHERE name = %s", (brand_name,))
         brand = main_cursor.fetchone()
         main_db_conn.commit()
 
         if not brand:
             raise Exception(f"Brand '{brand_name}' not found in main_db.")
-
         brand_id = brand["id"]
         print(f"✅ Brand ID for '{brand_name}': {brand_id}")
 
-        # Fetch the user_id
-        # user_email = "adityap@zenarate.com"
+        # Fetch user_id
         main_cursor.execute("SELECT id FROM user WHERE email = %s", (user_email,))
         user = main_cursor.fetchone()
+        main_db_conn.commit()
 
-        user_id = user["id"]
-        print(f"User ID for '{user_email}': {user_id}")
         if not user:
             raise Exception(f"Email '{user_email}' not found in main_db.")
+        user_id = user["id"]
+        print(f"✅ User ID for '{user_email}': {user_id}")
 
-        ### Step 2: Insert into bot_db service_resources
-
-        # query_variables = getQueryVariables(subscription_id, resource_group_name, client_id, client_secret, tenant_id, env)
-
+        # Step 2–4: Process each Azure resource
         for key, value in query_variables.items():
-
             resource_name = key
             endpoint = value["endpoint"]
-            key = value["keys"]
+            key_val = value["keys"]
             region = value["region"].lower()
-            type = value["type"]
+            type_val = value["type"]
 
-            insert_service_resource = """
-            INSERT INTO service_resources (brand_id, service, resource_type, resource, resource_id, region, endpoint, `key`)
-            VALUES (%s, 'Azure', %s, %s, %s, %s, %s, %s)
-            """
+            # ✅ Step 2: Check before inserting into service_resources
+            bot_cursor.execute("""
+                    SELECT COUNT(*) AS count FROM service_resources
+                    WHERE brand_id = %s AND resource = %s AND inactive = 0
+                """, (brand_id, resource_name))
+            exists = bot_cursor.fetchone()["count"]
 
-            bot_cursor.execute(insert_service_resource, (brand_id, type, resource_name, resource_name, region, endpoint, key))
-            bot_db_conn.commit()
-            print("✅ Inserted into service_resources.")
+            if exists > 0:
+                print(f"⚠️ Resource '{resource_name}' already exists for brand_id {brand_id} — skipping insert.")
+            else:
+                insert_service_resource = """
+                        INSERT INTO service_resources (brand_id, service, resource_type, resource, resource_id, region, endpoint, `key`)
+                        VALUES (%s, 'Azure', %s, %s, %s, %s, %s, %s)
+                    """
+                bot_cursor.execute(insert_service_resource,
+                                   (brand_id, type_val, resource_name, resource_name, region, endpoint, key_val))
+                bot_db_conn.commit()
+                print("✅ Inserted into service_resources.")
 
-            ### Step 3: Fetch newly inserted resource ID
-            bot_cursor.execute(
-                "SELECT id FROM service_resources WHERE brand_id = %s AND resource = %s and inactive = 0",
-                (brand_id, resource_name)
-            )
+            # Step 3: Get the resource ID
+            bot_cursor.execute("""
+                    SELECT id FROM service_resources
+                    WHERE brand_id = %s AND resource = %s AND inactive = 0
+                """, (brand_id, resource_name))
             resource = bot_cursor.fetchone()
 
             if not resource:
@@ -77,21 +81,29 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
             resource_id = resource["id"]
             print(f"✅ Fetched Resource ID: {resource_id}")
 
-            ### Step 4: Insert into resource_model
-            insert_resource_model = """
-            INSERT INTO resource_model (model_type, model_name, resource_id, inactive, created_by, updated_by)
-            VALUES ('Deployment', %s, %s, 0, %s, %s)
-            """
+            # ✅ Step 4: Check before inserting into resource_model
+            bot_cursor.execute("""
+                    SELECT COUNT(*) AS count FROM resource_model
+                    WHERE model_type = 'Deployment' AND model_name = %s AND resource_id = %s AND inactive = 0
+                """, (dep_model_name, resource_id))
+            model_exists = bot_cursor.fetchone()["count"]
 
-            bot_cursor.execute(insert_resource_model, (dep_model_name, resource_id, user_id, user_id))
-            bot_db_conn.commit()
-            print("✅ Inserted into resource_model.")
+            if model_exists > 0:
+                print(
+                    f"⚠️ Resource model '{dep_model_name}' already exists for resource_id {resource_id} — skipping insert.")
+            else:
+                insert_resource_model = """
+                        INSERT INTO resource_model (model_type, model_name, resource_id, inactive, created_by, updated_by)
+                        VALUES ('Deployment', %s, %s, 0, %s, %s)
+                    """
+                bot_cursor.execute(insert_resource_model, (dep_model_name, resource_id, user_id, user_id))
+                bot_db_conn.commit()
+                print("✅ Inserted into resource_model.")
 
     except Exception as e:
         print(f"❌ Error: {e}")
 
     finally:
-        # Close connections
         if main_cursor:
             main_cursor.close()
         if bot_cursor:

@@ -99,13 +99,10 @@ if __name__ == "__main__":
     # print(BOT_DB_CONFIG)
 
     try:
-        conn = mysql.connector.connect(
-            **MAIN_DB_CONFIG,
-        )
+        conn = mysql.connector.connect(**MAIN_DB_CONFIG)
         cursor = conn.cursor(dictionary=True)
 
-        # Fetching brand_id based on brand_name
-
+        # Fetch brand_id for given brand_name
         cursor.execute("SELECT id FROM brand WHERE name = %s", (brand_name,))
         brand = cursor.fetchone()
         conn.commit()
@@ -115,39 +112,42 @@ if __name__ == "__main__":
 
         brand_id = brand["id"]
         print(f"✅ Brand ID for '{brand_name}': {brand_id}")
-
         brand_ids.append(brand_id)
 
-        # Building insert query
-        insert_query = """
-        INSERT INTO advance_story_voices 
-        (brand_id, name, gender, voiceId, service, audio_url, avatar_url, inactive)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """
+        inserted_count = 0
+        skipped_count = 0
 
-        all_values = []
         for brand_id in brand_ids:
             for name, gender, voiceId, service, audio_url, avatar_url, inactive in names:
-                all_values.append((brand_id, name, gender, voiceId, service, audio_url, avatar_url, inactive))
+                # Check if this voiceId already exists for the brand
+                cursor.execute("""
+                        SELECT COUNT(*) as count FROM advance_story_voices
+                        WHERE brand_id = %s AND voiceId = %s
+                    """, (brand_id, voiceId))
+                result = cursor.fetchone()
 
-        # Preview the query
-        preview_rows = [
-            f"({brand_id}, '{name}', '{gender}', '{voiceId}', '{service}', '{audio_url}', '{avatar_url}', {inactive})"
-            for brand_id, name, gender, voiceId, service, audio_url, avatar_url, inactive in all_values
-        ]
-        print("Preview of generated INSERT statement:")
-        print("INSERT INTO advance_story_voices (brand_id, name, gender, voiceId, service, audio_url, avatar_url, inactive) VALUES")
-        print(",\n".join(preview_rows) + ";\n")
+                if result['count'] > 0:
+                    print(
+                        f"⚠️ Skipping duplicate voiceId '{voiceId}' for brand_id {brand_id} (Already {result['count']} record(s) exist)")
+                    skipped_count += 1
+                    continue
 
-        # Execute
-        cursor.executemany(insert_query, all_values)
+                # Insert the new record
+                cursor.execute("""
+                        INSERT INTO advance_story_voices
+                        (brand_id, name, gender, voiceId, service, audio_url, avatar_url, inactive)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (brand_id, name, gender, voiceId, service, audio_url, avatar_url, inactive))
+                inserted_count += 1
+
         conn.commit()
-        print(f"✅ Inserted {cursor.rowcount} rows successfully!")
+        print(f"\n✅ Inserted {inserted_count} new records.")
+        print(f"⏭️ Skipped {skipped_count} duplicates.")
 
     except Error as e:
         print(f"❌ Error occurred: {e}")
         if conn:
-            conn.rollback()  # rollback if anything goes wrong
+            conn.rollback()
     finally:
         if cursor:
             cursor.close()
