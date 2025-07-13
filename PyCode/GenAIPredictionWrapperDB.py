@@ -73,7 +73,7 @@ def db_execution(brand_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG):
 
         if result["count"] > 0:
             print(
-                f"⚠️ A 'Prediction' template already exists with count {result["count"]} for brand_id {brand_id} — skipping insert.")
+                f"⚠️ A 'Prediction' template already exists with count {result['count']} for brand_id {brand_id} — skipping insert.")
         else:
             # Insert template
             template_text = textwrap.dedent("""\
