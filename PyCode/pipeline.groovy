@@ -86,13 +86,13 @@ pipeline{
             dir('PyCode'){
                sh '''
                    . venvgenai/bin/activate
-                   python3 GenAI_automation_P2_Revert.py
+                   # python3 GenAI_automation_P2_Revert.py
                    if [ -f alert_resources.json ]; then
                        python3 ActionGroupNAlerts_Revert.py
                    else
                        echo "alert_resources.json not found, skipping ActionGroupNAlerts_Revert.py"
                    fi
-                   python3 GenAI_automation_Revert.py --subscription_id $subscription_id
+                   # python3 GenAI_automation_Revert.py --subscription_id $subscription_id
                    rm -f openai_resources.json
                    rm -f alert_resources.json
                '''
