@@ -38,11 +38,11 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        # . venvgenai/bin/activate
-                        # python3 GenAI_add_voices.py --env_m $env_main
-                        # python3 AzureGenAIResourceDBInsertions.py --env_m $env_main  --user_email $user_email
-                        # python3 GenAIPredictionWrapperDB.py --user_email $user_email --env_m $env_main
-                        # python3 ProdCoachDBInsertions.py --env $env_pa  --email $user_email --env_m $env_main
+                        . venvgenai/bin/activate
+                        python3 GenAI_add_voices.py --env_m $env_main
+                        python3 AzureGenAIResourceDBInsertions.py --env_m $env_main  --user_email $user_email
+                        python3 GenAIPredictionWrapperDB.py --user_email $user_email --env_m $env_main
+                        python3 ProdCoachDBInsertions.py --env $env_pa  --email $user_email --env_m $env_main
                     '''
                 }
             }
@@ -52,8 +52,8 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        # . venvgenai/bin/activate
-                        # python3 ProdDBConnCheck.py --env_m $env_main  --env_p $env_pa --user_email $user_email --brands "$brand_names"
+                        . venvgenai/bin/activate
+                        python3 ProdDBConnCheck.py --env_m $env_main  --env_p $env_pa --user_email $user_email --brands "$brand_names"
                     '''
                 }
             }
