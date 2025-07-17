@@ -11,7 +11,7 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        python3.10 -m venv venvgenai
+                        python3 -m venv venvgenai
                         . venvgenai/bin/activate
                         pip install --upgrade pip
                         pip install -r requirements.txt
@@ -63,8 +63,8 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        . venvgenai/bin/activate
-                        python3 ActionGroupNAlerts.py
+                        # . venvgenai/bin/activate
+                        # python3 ActionGroupNAlerts.py
                     '''
                 }
             }
