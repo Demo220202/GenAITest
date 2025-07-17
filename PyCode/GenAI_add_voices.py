@@ -47,6 +47,13 @@ names = [
     ('{French} - Emilie Lacroix', 'female', 'qMfbtjrTDTlGtBy52G6E', 'Elevenlabs', None, None, 0),
     ('{Mandarin} - Martin Li', 'male', 'WuLq5z7nEcrhppO0ZQJw', 'Elevenlabs', None, None, 0),
     ('{Mandarin} - Liang', 'female', 'FjfxJryh105iTLL4ktHB', 'Elevenlabs', None, None, 0),
+    ('{Spanish - Mexico} - Alberto Rodriguez', 'male', 'l1zE9xgNpUTaQCZzpNJa', 'Elevenlabs', None, None, 0),
+    ('{Spanish - Mexico} - Gabriela', 'female', 'hHjbwzYZW17oh0p05AKv', 'Elevenlabs', None, None, 0),
+    ('{Portuguese} - Estive', 'male', 'YU8EsJtXFMyKMxYtheDk', 'Elevenlabs', None, None, 0),
+    ('{Portuguese} - Carla', 'female', 'mPDAoQyGzxBSkE0OAOKw', 'Elevenlabs', None, None, 0),
+    ('{French} - Alexandre Boutin', 'male', 'IPgYtHTNLjC7Bq7IPHrm', 'Elevenlabs', None, None, 0),
+    ('{French} - Jeanne Mance', 'female', 'K7gx0ylJdff0yjM2uVQS', 'Elevenlabs', None, None, 0),
+    ('Finn', 'male', 'vBKc2FfBKJfcZNyEt1n6', 'Elevenlabs', None, None, 0),
 ]
 
 def load_config(file_path):
