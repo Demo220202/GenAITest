@@ -118,7 +118,7 @@ if __name__ == "__main__":
             raise Exception(f"Brand '{brand_name}' not found in main_db.")
 
         brand_id = brand["id"]
-        print(f"✅ Brand ID for '{brand_name}': {brand_id}")
+        print(f"Brand ID for '{brand_name}': {brand_id}")
         brand_ids.append(brand_id)
 
         inserted_count = 0
@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
                 if result['count'] > 0:
                     print(
-                        f"⚠️ Skipping duplicate voiceId '{voiceId}' for brand_id {brand_id} (Already {result['count']} record(s) exist)")
+                        f"Skipping duplicate voiceId '{voiceId}' for brand_id {brand_id} (Already {result['count']} record(s) exist)")
                     skipped_count += 1
                     continue
 
@@ -148,11 +148,11 @@ if __name__ == "__main__":
                 inserted_count += 1
 
         conn.commit()
-        print(f"\n✅ Inserted {inserted_count} new records.")
-        print(f"⏭️ Skipped {skipped_count} duplicates.")
+        print(f"\nInserted {inserted_count} new records.")
+        print(f"Skipped {skipped_count} duplicates.")
 
     except Error as e:
-        print(f"❌ Error occurred: {e}")
+        print(f"Error occurred: {e}")
         if conn:
             conn.rollback()
     finally:

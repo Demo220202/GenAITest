@@ -29,7 +29,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
         if not brand:
             raise Exception(f"Brand '{brand_name}' not found in main_db.")
         brand_id = brand["id"]
-        print(f"✅ Brand ID for '{brand_name}': {brand_id}")
+        print(f"Brand ID for '{brand_name}': {brand_id}")
 
         # Fetch user_id
         main_cursor.execute("SELECT id FROM user WHERE email = %s", (user_email,))
@@ -39,7 +39,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
         if not user:
             raise Exception(f"Email '{user_email}' not found in main_db.")
         user_id = user["id"]
-        print(f"✅ User ID for '{user_email}': {user_id}")
+        print(f"User ID for '{user_email}': {user_id}")
 
         # Step 2–4: Process each Azure resource
         for key, value in query_variables.items():
@@ -49,7 +49,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
             region = value["region"].lower()
             type_val = value["type"]
 
-            # ✅ Step 2: Check before inserting into service_resources
+            # Step 2: Check before inserting into service_resources
             bot_cursor.execute("""
                     SELECT COUNT(*) AS count FROM service_resources
                     WHERE brand_id = %s AND resource = %s AND inactive = 0
@@ -57,7 +57,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
             exists = bot_cursor.fetchone()["count"]
 
             if exists > 0:
-                print(f"⚠️ Resource '{resource_name}' already exists for brand_id {brand_id} — skipping insert.")
+                print(f"Resource '{resource_name}' already exists for brand_id {brand_id} — skipping insert.")
             else:
                 insert_service_resource = """
                         INSERT INTO service_resources (brand_id, service, resource_type, resource, resource_id, region, endpoint, `key`)
@@ -66,7 +66,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
                 bot_cursor.execute(insert_service_resource,
                                    (brand_id, type_val, resource_name, resource_name, region, endpoint, key_val))
                 bot_db_conn.commit()
-                print("✅ Inserted into service_resources.")
+                print("Inserted into service_resources.")
 
             # Step 3: Get the resource ID
             bot_cursor.execute("""
@@ -76,12 +76,12 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
             resource = bot_cursor.fetchone()
 
             if not resource:
-                raise Exception("❌ Error: Resource ID not found after insert.")
+                raise Exception("Error: Resource ID not found after insert.")
 
             resource_id = resource["id"]
-            print(f"✅ Fetched Resource ID: {resource_id}")
+            print(f"Fetched Resource ID: {resource_id}")
 
-            # ✅ Step 4: Check before inserting into resource_model
+            # Step 4: Check before inserting into resource_model
             bot_cursor.execute("""
                     SELECT COUNT(*) AS count FROM resource_model
                     WHERE model_type = 'Deployment' AND model_name = %s AND resource_id = %s AND inactive = 0
@@ -90,7 +90,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
 
             if model_exists > 0:
                 print(
-                    f"⚠️ Resource model '{dep_model_name}' already exists for resource_id {resource_id} — skipping insert.")
+                    f"Resource model '{dep_model_name}' already exists for resource_id {resource_id} — skipping insert.")
             else:
                 insert_resource_model = """
                         INSERT INTO resource_model (model_type, model_name, resource_id, inactive, created_by, updated_by)
@@ -98,10 +98,10 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
                     """
                 bot_cursor.execute(insert_resource_model, (dep_model_name, resource_id, user_id, user_id))
                 bot_db_conn.commit()
-                print("✅ Inserted into resource_model.")
+                print("Inserted into resource_model.")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     finally:
         if main_cursor:
@@ -112,7 +112,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, M
             main_db_conn.close()
         if bot_db_conn:
             bot_db_conn.close()
-        print("🔄 Database connections closed.")
+        print("Database connections closed.")
 
 
 def main():

@@ -48,7 +48,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
             raise Exception(f"Brand '{brand_name}' not found in main_db.")
 
         brand_id = brand["id"]
-        print(f"✅ Brand ID for '{brand_name}': {brand_id}")
+        print(f"Brand ID for '{brand_name}': {brand_id}")
 
         # Fetch the user_id
         # user_email = "adityap@zenarate.com"
@@ -115,7 +115,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
 
         # SQL query with placeholders
 
-        # ✅ Check if entry already exists
+        # Check if entry already exists
         pa_cursor.execute("""
                     SELECT COUNT(*) AS count FROM call_analyzer_configuration
                     WHERE brand_id = %s AND configuration_type = %s AND configuration_value = %s AND extra_parameter = %s AND inactive = 0
@@ -124,9 +124,9 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
         result = pa_cursor.fetchone()
 
         if result["count"] > 0:
-            print(f"⚠️ Configuration already exists for brand_id {brand_id} — skipping insert.")
+            print(f"Configuration already exists for brand_id {brand_id} — skipping insert.")
         else:
-            # ✅ Proceed with insert
+            # Proceed with insert
             insert_ca_configs = '''
                         INSERT INTO `call_analyzer_configuration`
                         (`configuration_type`, `configuration_value`, `extra_parameter`, `brand_id`, `inactive`, `created_at`, `created_by`, `updated_at`, `updated_by`)
@@ -135,10 +135,10 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
             pa_cursor.execute(insert_ca_configs,
                               ('gpt_story_evaluation_config', 'general', json_config, brand_id, 0, 8413, 8413))
             pa_db_conn.commit()
-            print("✅ Data inserted into call_analyzer_configuration.")
+            print("Data inserted into call_analyzer_configuration.")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     finally:
         # Close connections
@@ -150,7 +150,7 @@ def db_execution(brand_name, subscription_id, resource_group_name, user_email, P
             main_db_conn.close()
         if pa_db_conn:
             pa_db_conn.close()
-        print("🔄 Database connections closed.")
+        print("Database connections closed.")
 
 
 def main():

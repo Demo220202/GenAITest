@@ -29,7 +29,7 @@ def db_execution(brand_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG):
         if not brand:
             raise Exception(f"Brand '{brand_name}' not found in main_db.")
         brand_id = brand["id"]
-        print(f"✅ Brand ID for '{brand_name}': {brand_id}")
+        print(f"Brand ID for '{brand_name}': {brand_id}")
 
         # Fetch user ID
         main_cursor.execute("SELECT id FROM user WHERE email = %s", (user_email,))
@@ -39,7 +39,7 @@ def db_execution(brand_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG):
         if not user:
             raise Exception(f"Email '{user_email}' not found in main_db.")
         user_id = user["id"]
-        print(f"✅ User ID for '{user_email}': {user_id}")
+        print(f"User ID for '{user_email}': {user_id}")
 
         template_text = textwrap.dedent("""\
                         Scenario Instructions: {scenario_description}
@@ -73,7 +73,7 @@ def db_execution(brand_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG):
 
         if result["count"] > 0:
             print(
-                f"⚠️ A 'Prediction' template already exists with count {result['count']} for brand_id {brand_id} — skipping insert.")
+                f"A 'Prediction' template already exists with count {result['count']} for brand_id {brand_id} — skipping insert.")
         else:
             # Insert template
             template_text = textwrap.dedent("""\
@@ -110,7 +110,7 @@ def db_execution(brand_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG):
             """
             main_cursor.execute(insert_sql, (brand_id, "Prediction", template_text, "ACTIVE", user_id))
             # main_db_conn.commit()
-            print("✅ Inserted new prediction template successfully.")
+            print("Inserted new prediction template successfully.")
 
             main_cursor.execute("SELECT * FROM advance_story_prompt_templates WHERE brand_id = %s", (brand_id,))
             template = main_cursor.fetchone()
@@ -124,7 +124,7 @@ def db_execution(brand_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG):
     except Exception as e:
         if main_db_conn:
             main_db_conn.rollback()
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
     finally:
         if main_cursor:
@@ -135,7 +135,7 @@ def db_execution(brand_name, user_email, MAIN_DB_CONFIG, BOT_DB_CONFIG):
             main_db_conn.close()
         if bot_db_conn:
             bot_db_conn.close()
-        print("🔄 Database connections closed.")
+        print("Database connections closed.")
 
 
 def main():
