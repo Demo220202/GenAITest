@@ -25,8 +25,8 @@ pipeline{
             steps{
                 dir("PyCode"){
                     sh '''
-                        . venvgenai/bin/activate
-                        python3 GenAI_automation_P2.py
+                        # . venvgenai/bin/activate
+                        # python3 GenAI_automation_P2.py
                     '''
                 }
             }
